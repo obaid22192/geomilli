@@ -271,6 +271,7 @@ func (r *Runner) EnqueueJob(requestedCountries []string, onlineEnrich bool, mode
 	if len(enqueued) > 0 {
 		r.state = "running"
 	}
+	currentState := r.state
 	queueLen := len(r.queuedTasks)
 	r.mu.Unlock()
 
@@ -289,7 +290,7 @@ func (r *Runner) EnqueueJob(requestedCountries []string, onlineEnrich bool, mode
 	return &CreateJobResponse{
 		JobID:        jobID,
 		Message:      msg,
-		Status:       r.state,
+		Status:       currentState,
 		Enqueued:     enqueued,
 		Deduplicated: deduplicated,
 		QueueLength:  queueLen,
