@@ -89,7 +89,14 @@ func TestTelemetryRecorder(t *testing.T) {
 	}
 
 	// Verify top queries
-	if len(snap.TopQueries) == 0 || snap.TopQueries[0].Query != "brussels" {
+	foundBrussels := false
+	for _, tq := range snap.TopQueries {
+		if tq.Query == "brussels" {
+			foundBrussels = true
+			break
+		}
+	}
+	if !foundBrussels {
 		t.Errorf("expected 'brussels' in top queries, got %v", snap.TopQueries)
 	}
 

@@ -239,7 +239,10 @@ func topNQueries(m map[string]int64, n int) []QueryCount {
 		list = append(list, QueryCount{Query: k, Count: v})
 	}
 	sort.Slice(list, func(i, j int) bool {
-		return list[i].Count > list[j].Count
+		if list[i].Count != list[j].Count {
+			return list[i].Count > list[j].Count
+		}
+		return list[i].Query < list[j].Query
 	})
 	if len(list) > n {
 		list = list[:n]
