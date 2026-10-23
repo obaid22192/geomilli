@@ -39,7 +39,7 @@ Monitor background streaming ingestion jobs in real time:
 - **Pipeline Stage Visualizer**: Displays active state across `Fetch` ➔ `Filter` ➔ `Transform` ➔ `Enrich` ➔ `Index` ➔ `Swap`.
 - **Dynamic Country Manager**: Browse all Geofabrik countries. Select additional countries (e.g., `Netherlands (NL)`, `Luxembourg (LU)`) and click **"Import Selected Countries"** to queue new ingestion jobs without restarting the server.
 - **Resource Efficiency Gauges**:
-  - **Go Heap RSS**: Monitors harvester memory, verifying it stays below 50 MB.
+  - **Go Heap RSS**: Monitors harvester process memory footprint in real time.
   - **Disk Staging**: Displays current temporary disk footprint.
   - **SQLite Cache**: Hits vs. misses for Wikidata entity enrichment.
 - **Live Terminal Logs**: Real-time SSE streaming log viewer.

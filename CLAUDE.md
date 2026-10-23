@@ -22,6 +22,7 @@
    * `SearchableAttributes`: `name_display`, `name_alt_active`, `iata_code`, `icao_code`, `class`, `subclass`, `admin_hierarchy`, `country_name`.
    * `FilterableAttributes`: `class`, `subclass`, `country_code`, `admin_level`, `_geo`, `star_rating`, `cuisine`, `iata_code`, `icao_code`, `accommodation_type`.
 4. **Blue/Green Swapping**: Use shadow indices (`places__build_<timestamp>`) and swap atomically via `POST /swap-indexes`. Always clean up temporary indices in a `defer` block.
-5. **Documentation Protocol**: Whenever API endpoints, taxonomy, or pipeline features are modified, update `docs/`, run `make docs-build`, and verify with `make test`.
+5. **Scalability Boundaries**: `geomilli-api` scales horizontally without limitations. `geomilli-harvester` is single-instance bound to local disk and SQLite; scale it vertically (fast NVMe, CPU, `HARVESTER_CONCURRENCY`).
+6. **Documentation Protocol**: Whenever API endpoints, taxonomy, or pipeline features are modified, update `docs/`, run `make docs-build`, and verify with `make test`.
 
 For complete architectural details, see [.agents/AGENTS.md](file:///.agents/AGENTS.md).

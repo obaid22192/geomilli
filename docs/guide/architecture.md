@@ -155,3 +155,18 @@ flowchart TB
    - Periodic cron schedules or the "Periodic Delta Sync" UI button trigger an ETag check across Geofabrik mirrors. Unmodified countries complete validation in seconds, while changed countries are re-streamed and enriched using local SQLite WAL cache hits.
 5. **Real-Time Observability**:
    - Real-time worker slots, queued country lists, and country locks are exposed via `GET /api/v1/queue` and streamed over Server-Sent Events (`event: queue`).
+
+---
+
+## 5. Scalability & Deployment Boundaries
+
+When designing production deployments of Geomilli, note the architectural differences in how the components scale:
+
+### A. `geomilli-api` — Horizontally Scalable (No Scaling Limitations)
+* **Stateless Service**: The Go API holds no local state or write locks. Every query routes directly to Meilisearch or the read-only caches.
+* **Scaling**: Deploy as many instances/replicas as necessary behind any load balancer or Kubernetes ingress controller.
+
+### B. `geomilli-harvester` — Single-Instance Bound (Local Disk & SQLite)
+* **Local Storage & Cache Bound**: The harvester relies on local NVMe disk filesystem (`raw/`, `staging/`) for intermediate Osmium file transforms and an embedded SQLite database (`cache.db`) for enrichment caching.
+* **Limitation**: **The harvester cannot run as multiple distributed instances.** Spanning multiple harvester containers across shared network storage or shared SQLite instances will trigger file lock conflicts and database corruption.
+* **Scaling Strategy**: Scale **vertically** (allocate fast NVMe SSD storage and multi-core CPUs) and adjust internal thread parallelism via `HARVESTER_CONCURRENCY`.

@@ -95,6 +95,10 @@ Always execute commands from the repository root:
 * In `geomilli-studio`, Vite / Nginx proxies `/v1` requests to the Go API.
 * The cURL generator in `PlaygroundTab.tsx` must point to the backend API origin (`http://localhost:8080`), not the UI port (`:3000` / `:3333`).
 
+### G. Scalability & Instance Constraints
+* **`geomilli-api`**: Stateless service with zero in-memory locking. Can scale horizontally without limitations across multiple instances behind a load balancer.
+* **`geomilli-harvester`**: Single-instance bound. Relies on local NVMe disk filesystem (`raw/`, `staging/`) and an embedded SQLite database (`cache.db`) for enrichment caching. **Cannot run multiple concurrent instances** (to prevent SQLite lock conflicts and file races). Scale vertically with fast NVMe disk IO and multi-core CPU, adjusting internal thread parallelism via `HARVESTER_CONCURRENCY`.
+
 ---
 
 ## 4. Documentation Maintenance Protocol

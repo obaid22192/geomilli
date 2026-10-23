@@ -1,12 +1,12 @@
-# O(1) Streaming & Memory Architecture
+# Streaming & Disk-First Architecture
 
-Most OpenStreetMap ingestion pipelines fail on planet-scale datasets because they attempt to load entity graphs or large geographic hierarchies into RAM. In contrast, **Geomilli** is built strictly around **O(1) streaming and disk-first processing**.
+Most OpenStreetMap ingestion pipelines fail on large datasets because they attempt to load entity graphs or full geographic hierarchies into RAM. In contrast, **Geomilli** is built strictly around **streaming and disk-first processing**.
 
-Whether processing a single region like Belgium (`BE`, ~70 MB PBF) or the entire Planet (~75 GB PBF), the Go ingestion daemon operates under a **deterministic heap footprint of less than 50 MB RAM**.
+Whether processing a single region like Belgium (`BE`, ~70 MB PBF) or large country extracts, the Go ingestion daemon streams data line-by-line using Osmium and NDJSON staging files on disk without holding entire datasets in memory.
 
 ---
 
-## The Four Pillars of Low-Memory Ingestion
+## The Four Pillars of Disk-First Ingestion
 
 ```mermaid
 flowchart TD
@@ -83,11 +83,19 @@ With these settings:
 
 ---
 
-## Benchmark & Footprint Comparison
+## Ingestion Architecture Comparison
 
-| Metric | Traditional OSM Pipelines | Geomilli Harvester |
+| Dimension | Traditional OSM Pipelines | Geomilli Harvester |
 | :--- | :--- | :--- |
-| **Go Process RSS (Belgium)** | ~450 MB | **< 35 MB** |
-| **Go Process RSS (Planet)** | 32 GB – 64 GB | **< 65 MB** |
-| **Intermediate Storage** | Cumulative (150+ GB) | **Ephemeral (< 5 GB peak)** |
-| **Indexing Downtime** | Minutes to Hours | **0 ms (Atomic Swap)** |
+| **Memory Strategy** | Loads full entity graphs into RAM | **Streams line-delimited NDJSON via disk** |
+| **Enrichment Buffering** | Unbounded in-memory channels | **Bounded worker channels with SQLite WAL cache** |
+| **Intermediate Storage** | Cumulative in-memory buffers | **Disk staging with immediate step cleanup** |
+| **Indexing Downtime** | Index locked or degraded during build | **0 ms (Atomic Blue/Green Swap)** |
+
+---
+
+## 5. Scaling Boundaries & Limitations
+
+* **Harvester Single-Instance Bound**: Because `geomilli-harvester` relies on local disk staging files (`raw/`, `staging/`) and an embedded SQLite database (`cache.db`) for enrichment caching, it **cannot be scaled horizontally across multiple instances**. Running multiple harvester instances against the same volume or cache database will cause file locking and race conditions.
+* **Vertical Scaling**: Scale the harvester vertically with high-throughput NVMe disk IO and multi-core CPUs, adjusting internal concurrency using `HARVESTER_CONCURRENCY`.
+* **API Scaling**: By contrast, `geomilli-api` is completely stateless and can scale horizontally without limitations behind a load balancer.

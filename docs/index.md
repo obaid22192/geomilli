@@ -21,8 +21,8 @@ features:
     title: Sub-10ms Autocomplete
     details: Instant prefix search, geo-proximity sorting, and typo-tolerant search across millions of OpenStreetMap places.
   - icon: 💾
-    title: O(1) Memory Streaming
-    details: Ingest single countries or entire continents with bounded memory buffers (<50MB RAM) and disk-backed streaming.
+    title: Disk-First Streaming
+    details: Ingest single countries or entire continents with disk-backed streaming, Osmium filtering, and zero in-memory entity graph buffering.
   - icon: 🌍
     title: 19 Taxonomy Classes
     details: Structured classification from Countries, Regions, and Cities to Airports, Hotels, Restaurants, and Mountain Peaks.
