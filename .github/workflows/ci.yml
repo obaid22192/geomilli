@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-harvester:
+    name: Test Harvester Service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies (osmium-tool)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y osmium-tool
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache-dependency-path: geomilli-harvester/go.sum
+
+      - name: Run Harvester unit tests
+        run: |
+          cd geomilli-harvester
+          go test -v -race ./...
+
+      - name: Build Harvester binaries
+        run: |
+          cd geomilli-harvester
+          go build -v ./...
+
+  test-api:
+    name: Test Search & Geo API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache-dependency-path: geomilli-api/go.sum
+
+      - name: Run API unit tests
+        run: |
+          cd geomilli-api
+          go test -v -race ./...
+
+      - name: Build API binary
+        run: |
+          cd geomilli-api
+          go build -v ./...
+
+  test-studio:
+    name: Build Studio UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: geomilli-studio/package-lock.json
+
+      - name: Install Studio dependencies
+        run: |
+          cd geomilli-studio
+          npm ci
+
+      - name: TypeScript & Vite build
+        run: |
+          cd geomilli-studio
+          npm run build
+
+  test-docs:
+    name: Validate Docs Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install Docs dependencies
+        run: |
+          cd docs
+          npm ci
+
+      - name: Build VitePress documentation
+        run: |
+          cd docs
+          npm run build
+
+  docker-validate:
+    name: Validate Dockerfiles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate API Dockerfile build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./geomilli-api
+          file: ./geomilli-api/Dockerfile
+          push: false
+          tags: geomilli-api:test
+
+      - name: Validate Studio Dockerfile build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./geomilli-studio
+          file: ./geomilli-studio/Dockerfile
+          push: false
+          tags: geomilli-studio:test
+
+      - name: Validate Harvester Dockerfile build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./geomilli-harvester
+          file: ./geomilli-harvester/Dockerfile
+          push: false
+          tags: geomilli-harvester:test

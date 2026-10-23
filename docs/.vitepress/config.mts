@@ -3,7 +3,7 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 
 export default withMermaid(
   defineConfig({
-    base: '/docs/',
+    base: process.env.VITEPRESS_BASE || '/docs/',
     title: 'Geomilli',
     description: 'Open-Source Geospatial Search & OpenStreetMap Intelligence Powered by Meilisearch',
     lang: 'en-US',
