@@ -9,15 +9,16 @@
 [![Meilisearch](https://img.shields.io/badge/Meilisearch-v1.13-FF5CAA?logo=meilisearch)](https://www.meilisearch.com)
 [![Docker](https://img.shields.io/badge/Docker-Compose_v2-2496ED?logo=docker)](https://www.docker.com)
 [![OpenStreetMap](https://img.shields.io/badge/OpenStreetMap-Data-7EBC6F?logo=openstreetmap)](https://www.openstreetmap.org)
-[![Docs](https://img.shields.io/badge/Docs-VitePress-42b883?logo=vitepress)](https://geomilli.com)
+[![Docs](https://img.shields.io/badge/Docs-GitHub_Pages-42b883?logo=vitepress)](https://obaid22192.github.io/geomilli/)
 
 <p align="center">
   <a href="#-60-second-quickstart">Quickstart</a> •
+  <a href="#-geomilli-studio-ui">Studio UI</a> •
   <a href="#-system-architecture">Architecture</a> •
   <a href="#-sub-repositories">Repositories</a> •
   <a href="#-api-preview">API Preview</a> •
   <a href="#-key-features">Features</a> •
-  <a href="docs/">Documentation</a>
+  <a href="https://obaid22192.github.io/geomilli/">Documentation</a>
 </p>
 
 </div>
@@ -29,6 +30,33 @@
 **Geomilli** transforms raw OpenStreetMap datasets into a lightning-fast geospatial search engine. Designed around an **O(1) memory, disk-backed streaming pipeline**, Geomilli ingests single countries or planetary datasets on modest hardware with a Go heap footprint under **50 MB RAM**.
 
 With sub-10ms response times, typo tolerance, geo-proximity sorting, and 19 normalized taxonomy classes, Geomilli delivers production-grade autocomplete, faceted discovery, reverse geocoding, and aviation intelligence out of the box.
+
+---
+
+## 🖥️ Geomilli Studio UI
+
+Geomilli Studio is an interactive developer console and telemetry dashboard built with React 19, TypeScript, and MapLibre GL.
+
+### 1. Interactive Map Explorer & Multi-Mode API Playground
+Test sub-10ms prefix autocomplete, geospatial radius searches, bounding-box queries, and airport resolutions against live Meilisearch indexes with instant vector tile visualization and JSON inspection.
+
+<p align="center">
+  <img src="assets/screenshots/studio-map-explorer.png" alt="Geomilli Studio - Map Explorer & API Playground" width="100%">
+</p>
+
+### 2. Importer Center & Live Pipeline Visualizer
+Launch and orchestrate streaming ingestion jobs across worldwide countries with real-time SSE progress tracking, country deduplication locks, memory/disk gauges, and live daemon logs.
+
+<p align="center">
+  <img src="assets/screenshots/studio-importer-center.png" alt="Geomilli Studio - Importer Center & Pipeline Flow" width="100%">
+</p>
+
+### 3. Real-Time Telemetry & Observability
+Monitor endpoint throughput (QPS), latency percentiles ($p_{50}$, $p_{95}$, $p_{99}$), zero-hit search queries, status-code distributions, and Meilisearch engine statistics with zero external observability dependencies.
+
+<p align="center">
+  <img src="assets/screenshots/studio-metrics.png" alt="Geomilli Studio - Real-Time Telemetry & Metrics" width="100%">
+</p>
 
 ---
 
@@ -104,11 +132,12 @@ docker compose up -d --build
 ```
 
 ### Access Services:
-- **Geomilli Studio (UI)**: [http://localhost:3000](http://localhost:3000)
+- **Geomilli Studio (UI)**: [http://localhost:3333](http://localhost:3333) (or [http://localhost:3000](http://localhost:3000))
 - **Meilisearch Admin UI**: [http://localhost:7701](http://localhost:7701)
 - **Geomilli API**: [http://localhost:8080](http://localhost:8080)
 - **Harvester Daemon**: [http://localhost:8085](http://localhost:8085)
 - **Meilisearch Engine**: [http://localhost:7700](http://localhost:7700)
+- **Hosted Documentation**: [https://obaid22192.github.io/geomilli/](https://obaid22192.github.io/geomilli/)
 
 ---
 
@@ -204,7 +233,9 @@ docker compose -f docker-compose.yml -f docker-compose.cloud.yml up -d --build
 
 ## 📖 Documentation
 
-For comprehensive guides, tutorials, and OpenAPI specifications, visit our [Documentation Site](docs/) or start the local doc server:
+The complete documentation is hosted on GitHub Pages at **[https://obaid22192.github.io/geomilli/](https://obaid22192.github.io/geomilli/)**.
+
+You can also run the local VitePress documentation server with:
 
 ```bash
 make docs
