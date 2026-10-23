@@ -1,0 +1,36 @@
+# Binaries
+bin/
+/harvester
+/pipeline
+/transform-places
+/enrich-places
+/index
+/cleanup
+/countries
+/gen-filters
+*.exe
+*.test
+
+# Environment files
+.env
+.env.local
+
+# Staging and intermediate files
+staging/*.ndjson
+staging/*.json
+raw/osm/*.pbf
+raw/osm/*.geojsonseq
+raw/osm/*.etag
+raw/osm/*.download
+
+# Locks and manifests
+data/locks/*.lock
+
+# Cache
+data/cache/*.sqlite
+data/cache/*.sqlite-wal
+data/cache/*.sqlite-shm
+
+# OS files
+.DS_Store
+Thumbs.db

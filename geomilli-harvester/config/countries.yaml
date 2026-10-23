@@ -1,0 +1,508 @@
+countries:
+  # ============================================================================
+  # EUROPE (Default: Belgium BE)
+  # ============================================================================
+  - code: BE
+    name: Belgium
+    continent: Europe
+    geofabrik_path: europe/belgium
+  - code: NL
+    name: Netherlands
+    continent: Europe
+    geofabrik_path: europe/netherlands
+  - code: LU
+    name: Luxembourg
+    continent: Europe
+    geofabrik_path: europe/luxembourg
+  - code: FR
+    name: France
+    continent: Europe
+    geofabrik_path: europe/france
+  - code: DE
+    name: Germany
+    continent: Europe
+    geofabrik_path: europe/germany
+  - code: GB
+    name: United Kingdom
+    continent: Europe
+    geofabrik_path: europe/great-britain
+  - code: IE
+    name: Ireland
+    continent: Europe
+    geofabrik_path: europe/ireland-and-northern-ireland
+  - code: IT
+    name: Italy
+    continent: Europe
+    geofabrik_path: europe/italy
+  - code: ES
+    name: Spain
+    continent: Europe
+    geofabrik_path: europe/spain
+  - code: PT
+    name: Portugal
+    continent: Europe
+    geofabrik_path: europe/portugal
+  - code: CH
+    name: Switzerland
+    continent: Europe
+    geofabrik_path: europe/switzerland
+  - code: AT
+    name: Austria
+    continent: Europe
+    geofabrik_path: europe/austria
+  - code: DK
+    name: Denmark
+    continent: Europe
+    geofabrik_path: europe/denmark
+  - code: SE
+    name: Sweden
+    continent: Europe
+    geofabrik_path: europe/sweden
+  - code: NO
+    name: Norway
+    continent: Europe
+    geofabrik_path: europe/norway
+  - code: FI
+    name: Finland
+    continent: Europe
+    geofabrik_path: europe/finland
+  - code: IS
+    name: Iceland
+    continent: Europe
+    geofabrik_path: europe/iceland
+  - code: PL
+    name: Poland
+    continent: Europe
+    geofabrik_path: europe/poland
+  - code: CZ
+    name: Czech Republic
+    continent: Europe
+    geofabrik_path: europe/czech-republic
+  - code: SK
+    name: Slovakia
+    continent: Europe
+    geofabrik_path: europe/slovakia
+  - code: HU
+    name: Hungary
+    continent: Europe
+    geofabrik_path: europe/hungary
+  - code: RO
+    name: Romania
+    continent: Europe
+    geofabrik_path: europe/romania
+  - code: BG
+    name: Bulgaria
+    continent: Europe
+    geofabrik_path: europe/bulgaria
+  - code: GR
+    name: Greece
+    continent: Europe
+    geofabrik_path: europe/greece
+  - code: HR
+    name: Croatia
+    continent: Europe
+    geofabrik_path: europe/croatia
+  - code: SI
+    name: Slovenia
+    continent: Europe
+    geofabrik_path: europe/slovenia
+  - code: RS
+    name: Serbia
+    continent: Europe
+    geofabrik_path: europe/serbia
+  - code: BA
+    name: Bosnia and Herzegovina
+    continent: Europe
+    geofabrik_path: europe/bosnia-herzegovina
+  - code: AL
+    name: Albania
+    continent: Europe
+    geofabrik_path: europe/albania
+  - code: ME
+    name: Montenegro
+    continent: Europe
+    geofabrik_path: europe/montenegro
+  - code: MK
+    name: North Macedonia
+    continent: Europe
+    geofabrik_path: europe/north-macedonia
+  - code: EE
+    name: Estonia
+    continent: Europe
+    geofabrik_path: europe/estonia
+  - code: LV
+    name: Latvia
+    continent: Europe
+    geofabrik_path: europe/latvia
+  - code: LT
+    name: Lithuania
+    continent: Europe
+    geofabrik_path: europe/lithuania
+  - code: UA
+    name: Ukraine
+    continent: Europe
+    geofabrik_path: europe/ukraine
+  - code: CY
+    name: Cyprus
+    continent: Europe
+    geofabrik_path: europe/cyprus
+  - code: MT
+    name: Malta
+    continent: Europe
+    geofabrik_path: europe/malta
+  - code: TR
+    name: Turkey
+    continent: Europe
+    geofabrik_path: europe/turkey
+
+  # ============================================================================
+  # NORTH AMERICA
+  # ============================================================================
+  - code: US
+    name: United States
+    continent: North America
+    geofabrik_path: north-america/us
+  - code: CA
+    name: Canada
+    continent: North America
+    geofabrik_path: north-america/canada
+  - code: MX
+    name: Mexico
+    continent: North America
+    geofabrik_path: north-america/mexico
+  - code: GL
+    name: Greenland
+    continent: North America
+    geofabrik_path: north-america/greenland
+
+  # ============================================================================
+  # CENTRAL AMERICA & CARIBBEAN
+  # ============================================================================
+  - code: CR
+    name: Costa Rica
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/costa-rica
+  - code: PA
+    name: Panama
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/panama
+  - code: GT
+    name: Guatemala
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/guatemala
+  - code: BZ
+    name: Belize
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/belize
+  - code: SV
+    name: El Salvador
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/el-salvador
+  - code: HN
+    name: Honduras
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/honduras
+  - code: NI
+    name: Nicaragua
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/nicaragua
+  - code: CU
+    name: Cuba
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/cuba
+  - code: DO
+    name: Dominican Republic
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/dominican-republic
+  - code: HT
+    name: Haiti
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/haiti
+  - code: JM
+    name: Jamaica
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/jamaica
+  - code: BS
+    name: Bahamas
+    continent: Central America & Caribbean
+    geofabrik_path: central-america/bahamas
+
+  # ============================================================================
+  # SOUTH AMERICA
+  # ============================================================================
+  - code: BR
+    name: Brazil
+    continent: South America
+    geofabrik_path: south-america/brazil
+  - code: AR
+    name: Argentina
+    continent: South America
+    geofabrik_path: south-america/argentina
+  - code: CL
+    name: Chile
+    continent: South America
+    geofabrik_path: south-america/chile
+  - code: CO
+    name: Colombia
+    continent: South America
+    geofabrik_path: south-america/colombia
+  - code: PE
+    name: Peru
+    continent: South America
+    geofabrik_path: south-america/peru
+  - code: EC
+    name: Ecuador
+    continent: South America
+    geofabrik_path: south-america/ecuador
+  - code: UY
+    name: Uruguay
+    continent: South America
+    geofabrik_path: south-america/uruguay
+  - code: PY
+    name: Paraguay
+    continent: South America
+    geofabrik_path: south-america/paraguay
+  - code: BO
+    name: Bolivia
+    continent: South America
+    geofabrik_path: south-america/bolivia
+  - code: VE
+    name: Venezuela
+    continent: South America
+    geofabrik_path: south-america/venezuela
+  - code: GY
+    name: Guyana
+    continent: South America
+    geofabrik_path: south-america/guyana
+  - code: SR
+    name: Suriname
+    continent: South America
+    geofabrik_path: south-america/suriname
+
+  # ============================================================================
+  # ASIA
+  # ============================================================================
+  - code: JP
+    name: Japan
+    continent: Asia
+    geofabrik_path: asia/japan
+  - code: IN
+    name: India
+    continent: Asia
+    geofabrik_path: asia/india
+  - code: ID
+    name: Indonesia
+    continent: Asia
+    geofabrik_path: asia/indonesia
+  - code: TH
+    name: Thailand
+    continent: Asia
+    geofabrik_path: asia/thailand
+  - code: VN
+    name: Vietnam
+    continent: Asia
+    geofabrik_path: asia/vietnam
+  - code: MY
+    name: Malaysia
+    continent: Asia
+    geofabrik_path: asia/malaysia-singapore-brunei
+  - code: SG
+    name: Singapore
+    continent: Asia
+    geofabrik_path: asia/malaysia-singapore-brunei
+  - code: KR
+    name: South Korea
+    continent: Asia
+    geofabrik_path: asia/south-korea
+  - code: PH
+    name: Philippines
+    continent: Asia
+    geofabrik_path: asia/philippines
+  - code: TW
+    name: Taiwan
+    continent: Asia
+    geofabrik_path: asia/taiwan
+  - code: PK
+    name: Pakistan
+    continent: Asia
+    geofabrik_path: asia/pakistan
+  - code: BD
+    name: Bangladesh
+    continent: Asia
+    geofabrik_path: asia/bangladesh
+  - code: LK
+    name: Sri Lanka
+    continent: Asia
+    geofabrik_path: asia/sri-lanka
+  - code: NP
+    name: Nepal
+    continent: Asia
+    geofabrik_path: asia/nepal
+  - code: AE
+    name: United Arab Emirates
+    continent: Asia
+    geofabrik_path: asia/united-arab-emirates
+  - code: SA
+    name: Saudi Arabia
+    continent: Asia
+    geofabrik_path: asia/saudi-arabia
+  - code: IL
+    name: Israel
+    continent: Asia
+    geofabrik_path: asia/israel-and-palestine
+  - code: QA
+    name: Qatar
+    continent: Asia
+    geofabrik_path: asia/qatar
+  - code: KW
+    name: Kuwait
+    continent: Asia
+    geofabrik_path: asia/kuwait
+  - code: OM
+    name: Oman
+    continent: Asia
+    geofabrik_path: asia/oman
+  - code: JO
+    name: Jordan
+    continent: Asia
+    geofabrik_path: asia/jordan
+  - code: LB
+    name: Lebanon
+    continent: Asia
+    geofabrik_path: asia/lebanon
+  - code: KZ
+    name: Kazakhstan
+    continent: Asia
+    geofabrik_path: asia/kazakhstan
+  - code: UZ
+    name: Uzbekistan
+    continent: Asia
+    geofabrik_path: asia/uzbekistan
+  - code: GE
+    name: Georgia
+    continent: Asia
+    geofabrik_path: asia/georgia
+  - code: AM
+    name: Armenia
+    continent: Asia
+    geofabrik_path: asia/armenia
+  - code: AZ
+    name: Azerbaijan
+    continent: Asia
+    geofabrik_path: asia/azerbaijan
+
+  # ============================================================================
+  # AFRICA
+  # ============================================================================
+  - code: ZA
+    name: South Africa
+    continent: Africa
+    geofabrik_path: africa/south-africa
+  - code: EG
+    name: Egypt
+    continent: Africa
+    geofabrik_path: africa/egypt
+  - code: MA
+    name: Morocco
+    continent: Africa
+    geofabrik_path: africa/morocco
+  - code: NG
+    name: Nigeria
+    continent: Africa
+    geofabrik_path: africa/nigeria
+  - code: KE
+    name: Kenya
+    continent: Africa
+    geofabrik_path: africa/kenya
+  - code: ET
+    name: Ethiopia
+    continent: Africa
+    geofabrik_path: africa/ethiopia
+  - code: GH
+    name: Ghana
+    continent: Africa
+    geofabrik_path: africa/ghana
+  - code: TZ
+    name: Tanzania
+    continent: Africa
+    geofabrik_path: africa/tanzania
+  - code: UG
+    name: Uganda
+    continent: Africa
+    geofabrik_path: africa/uganda
+  - code: DZ
+    name: Algeria
+    continent: Africa
+    geofabrik_path: africa/algeria
+  - code: TN
+    name: Tunisia
+    continent: Africa
+    geofabrik_path: africa/tunisia
+  - code: SN
+    name: Senegal
+    continent: Africa
+    geofabrik_path: africa/senegal
+  - code: CI
+    name: Ivory Coast
+    continent: Africa
+    geofabrik_path: africa/ivory-coast
+  - code: RW
+    name: Rwanda
+    continent: Africa
+    geofabrik_path: africa/rwanda
+  - code: MU
+    name: Mauritius
+    continent: Africa
+    geofabrik_path: africa/mauritius
+  - code: NA
+    name: Namibia
+    continent: Africa
+    geofabrik_path: africa/namibia
+  - code: ZW
+    name: Zimbabwe
+    continent: Africa
+    geofabrik_path: africa/zimbabwe
+  - code: MZ
+    name: Mozambique
+    continent: Africa
+    geofabrik_path: africa/mozambique
+  - code: AO
+    name: Angola
+    continent: Africa
+    geofabrik_path: africa/angola
+  - code: CM
+    name: Cameroon
+    continent: Africa
+    geofabrik_path: africa/cameroon
+  - code: MG
+    name: Madagascar
+    continent: Africa
+    geofabrik_path: africa/madagascar
+
+  # ============================================================================
+  # OCEANIA
+  # ============================================================================
+  - code: AU
+    name: Australia
+    continent: Oceania
+    geofabrik_path: australia-oceania/australia
+  - code: NZ
+    name: New Zealand
+    continent: Oceania
+    geofabrik_path: australia-oceania/new-zealand
+  - code: FJ
+    name: Fiji
+    continent: Oceania
+    geofabrik_path: australia-oceania/fiji
+  - code: PG
+    name: Papua New Guinea
+    continent: Oceania
+    geofabrik_path: australia-oceania/papua-new-guinea
+  - code: NC
+    name: New Caledonia
+    continent: Oceania
+    geofabrik_path: australia-oceania/new-caledonia
+  - code: PF
+    name: French Polynesia
+    continent: Oceania
+    geofabrik_path: australia-oceania/polynesia

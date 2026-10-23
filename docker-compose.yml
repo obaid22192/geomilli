@@ -1,0 +1,98 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.13
+    container_name: geomilli-meilisearch
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_ENV=development
+      - MEILI_MASTER_KEY=${MEILI_API_KEY:-masterKey123}
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MAX_INDEXING_MEMORY=512Mb
+      - MEILI_MAX_INDEXING_THREADS=2
+    volumes:
+      - meili_data:/meili_data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:7700/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+  meilisearch-ui:
+    image: eyeix/meilisearch-ui:latest
+    container_name: geomilli-meilisearch-ui
+    restart: unless-stopped
+    ports:
+      - "${MEILI_UI_PORT:-7701}:24900"
+    depends_on:
+      meilisearch:
+        condition: service_healthy
+    environment:
+      - SINGLETON_MODE=true
+      - SINGLETON_HOST=${MEILI_BROWSER_URL:-http://localhost:7700}
+      - SINGLETON_API_KEY=${MEILI_API_KEY:-masterKey123}
+
+  geomilli-harvester:
+    build:
+      context: ./geomilli-harvester
+      dockerfile: Dockerfile
+    container_name: geomilli-harvester
+    restart: unless-stopped
+    ports:
+      - "${HARVESTER_PORT:-8085}:8085"
+    depends_on:
+      meilisearch:
+        condition: service_healthy
+    environment:
+      - COUNTRIES=${COUNTRIES:-BE}
+      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_API_KEY=${MEILI_API_KEY:-masterKey123}
+      - PORT=8085
+      - HARVESTER_PORT=8085
+      - ONLINE_ENRICH=${ONLINE_ENRICH:-false}
+      - ENRICH_QPS=${ENRICH_QPS:-3}
+      - DATA_DIR=/app/data
+    volumes:
+      - harvester_cache:/app/data
+
+  geomilli-api:
+    build:
+      context: ./geomilli-api
+      dockerfile: Dockerfile
+    container_name: geomilli-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-${PORT:-8080}}:8080"
+    depends_on:
+      meilisearch:
+        condition: service_healthy
+      geomilli-harvester:
+        condition: service_started
+    environment:
+      - PORT=8080
+      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_API_KEY=${MEILI_API_KEY:-masterKey123}
+      - HARVESTER_URL=http://geomilli-harvester:8085
+
+  geomilli-studio:
+    build:
+      context: ./geomilli-studio
+      dockerfile: Dockerfile
+    container_name: geomilli-studio
+    restart: unless-stopped
+    ports:
+      - "${STUDIO_PORT:-3000}:3000"
+    depends_on:
+      geomilli-api:
+        condition: service_started
+    environment:
+      - PORT=3000
+      - VITE_API_URL=http://localhost:8080
+
+volumes:
+  meili_data:
+    name: geomilli_meili_data
+  harvester_cache:
+    name: geomilli_harvester_cache

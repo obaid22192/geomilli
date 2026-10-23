@@ -1,0 +1,33 @@
+# Docker Compose Override for Meilisearch Cloud
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.cloud.yml up -d --build
+
+services:
+  meilisearch:
+    # Disable local Meilisearch container when using Meilisearch Cloud
+    entrypoint: ["sh", "-c", "echo 'Using external Meilisearch Cloud at ${MEILI_HOST}'; exit 0"]
+    restart: "no"
+    ports: []
+    healthcheck:
+      disable: true
+
+  geomilli-harvester:
+    depends_on: {}
+    environment:
+      - MEILI_HOST=${MEILI_HOST}
+      - MEILI_API_KEY=${MEILI_API_KEY}
+
+  geomilli-api:
+    depends_on:
+      geomilli-harvester:
+        condition: service_started
+    environment:
+      - MEILI_HOST=${MEILI_HOST}
+      - MEILI_API_KEY=${MEILI_API_KEY}
+
+  meilisearch-ui:
+    depends_on: {}
+    environment:
+      - SINGLETON_MODE=true
+      - SINGLETON_HOST=${MEILI_HOST}
+      - SINGLETON_API_KEY=${MEILI_API_KEY}

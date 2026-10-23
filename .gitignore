@@ -1,0 +1,45 @@
+# Environment & Secrets
+.env
+*.env.local
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Logs & Temporary Files
+*.log
+tmp/
+temp/
+
+# Go Build Artifacts
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+geomilli-harvester/harvester
+geomilli-harvester/pipeline
+geomilli-harvester/transform-places
+geomilli-harvester/enrich-places
+geomilli-harvester/index
+geomilli-harvester/cleanup
+geomilli-harvester/countries
+geomilli-harvester/gen-filters
+
+# Node & Frontend Build Artifacts
+node_modules/
+dist/
+.vitepress/dist/
+.vitepress/cache/
+
+# Pipeline Staging & Raw Data
+raw/
+staging/
+data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.osm.pbf
+*.geojsonseq
+*.ndjson

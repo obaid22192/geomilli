@@ -1,0 +1,144 @@
+# Whitelist of languages to extract and index.
+# Disabling unused languages reduces document payload and Meilisearch index size significantly.
+version: 1
+languages:
+  - code: en
+    name: English
+    enabled: true
+
+  - code: nl
+    name: Dutch
+    enabled: true
+
+  - code: fr
+    name: French
+    enabled: true
+
+  - code: de
+    name: German
+    enabled: true
+
+  - code: es
+    name: Spanish
+    enabled: true
+
+  - code: it
+    name: Italian
+    enabled: true
+
+  - code: pt
+    name: Portuguese
+    enabled: true
+
+  - code: zh
+    name: Chinese
+    enabled: true
+
+  - code: ja
+    name: Japanese
+    enabled: true
+
+  - code: ru
+    name: Russian
+    enabled: true
+
+  - code: ar
+    name: Arabic
+    enabled: true
+
+  - code: tr
+    name: Turkish
+    enabled: true
+
+  - code: hi
+    name: Hindi
+    enabled: true
+
+  - code: bn
+    name: Bengali
+    enabled: true
+
+  - code: pa
+    name: Punjabi
+    enabled: true
+
+  - code: jv
+    name: Javanese
+    enabled: true
+
+  - code: ms
+    name: Malay
+    enabled: true
+
+  - code: te
+    name: Telugu
+    enabled: true
+
+  - code: vi
+    name: Vietnamese
+    enabled: true
+
+  - code: ko
+    name: Korean
+    enabled: true
+
+  - code: pl
+    name: Polish
+    enabled: true
+
+  - code: uk
+    name: Ukrainian
+    enabled: true
+
+  - code: fa
+    name: Persian
+    enabled: true
+
+  - code: ro
+    name: Romanian
+    enabled: true
+
+  - code: el
+    name: Greek
+    enabled: true
+
+  # Disabled by default (can be enabled if needed)
+  - code: la
+    name: Latin
+    enabled: false
+
+  - code: eo
+    name: Esperanto
+    enabled: false
+
+  - code: he
+    name: Hebrew
+    enabled: false
+
+  - code: sv
+    name: Swedish
+    enabled: true
+
+  - code: no
+    name: Norwegian
+    enabled: true
+
+  - code: da
+    name: Danish
+    enabled: true
+
+  - code: fi
+    name: Finnish
+    enabled: true
+
+  - code: cs
+    name: Czech
+    enabled: false
+
+  - code: hu
+    name: Hungarian
+    enabled: true
+
+  - code: th
+    name: Thai
+    enabled: false

@@ -1,0 +1,178 @@
+# Taxonomy configuration for the auto-complete pipeline.
+# Class ORDER determines match priority: first match wins.
+# POI classes must come before admin classes so that features
+# with both POI tags and admin_level are classified as POI.
+
+version: 1
+
+classes:
+  # ──────────────────────────────────────────────────────
+  # POI layer classes (processed in the POI osmium pass)
+  # ──────────────────────────────────────────────────────
+
+  - name: TrainStation
+    base_score: 0.60
+    layer: poi
+    match:
+      - key: railway
+        values: [station, halt]
+
+  - name: Stadium
+    base_score: 0.56
+    layer: poi
+    match:
+      - key: leisure
+        values: [stadium]
+
+  - name: Hotel
+    base_score: 0.50
+    layer: poi
+    match:
+      - key: tourism
+        values: [hotel, hostel, motel, guest_house, apartment, camp_site, chalet]
+    attributes:
+      - tag: stars
+        field: star_rating
+        transform: int
+      - tag: tourism
+        field: accommodation_type
+
+  - name: TouristAttraction
+    base_score: 0.58
+    layer: poi
+    match:
+      - key: tourism
+        values: [attraction, museum, viewpoint, zoo, theme_park, gallery, aquarium]
+      - key: amenity
+        values: [place_of_worship]
+        require_any_tag: [wikidata, wikipedia]
+
+  - name: HistoricSite
+    base_score: 0.50
+    layer: poi
+    match:
+      - key: historic
+        values: [castle, monument, memorial, archaeological_site, ruins, fort, battlefield]
+
+  - name: Park
+    base_score: 0.48
+    layer: poi
+    match:
+      - key: leisure
+        values: [park, nature_reserve, marina]
+      - key: boundary
+        values: [national_park]
+
+  - name: BusStation
+    base_score: 0.48
+    layer: poi
+    match:
+      - key: amenity
+        values: [bus_station]
+
+  - name: FerryTerminal
+    base_score: 0.48
+    layer: poi
+    match:
+      - key: amenity
+        values: [ferry_terminal]
+
+  - name: Restaurant
+    base_score: 0.40
+    layer: poi
+    match:
+      - key: amenity
+        values: [restaurant, cafe, bar, pub]
+    attributes:
+      - tag: cuisine
+        field: cuisine
+
+  - name: Entertainment
+    base_score: 0.40
+    layer: poi
+    match:
+      - key: amenity
+        values: [theatre, cinema, nightclub]
+      - key: leisure
+        values: [water_park]
+
+  - name: Beach
+    base_score: 0.45
+    layer: poi
+    match:
+      - key: natural
+        values: [beach]
+      - key: leisure
+        values: [beach_resort]
+
+  - name: NaturalFeature
+    base_score: 0.38
+    layer: poi
+    match:
+      - key: natural
+        values: [peak, volcano, cave_entrance, glacier]
+        geometry: [node]
+
+  - name: Shopping
+    base_score: 0.38
+    layer: poi
+    match:
+      - key: shop
+        values: [mall, department_store]
+
+  - name: Airport
+    base_score: 0.80
+    layer: poi
+    match:
+      - key: aeroway
+        values: [aerodrome, airport]
+    attributes:
+      - tag: iata
+        field: iata_code
+        transform: upper
+      - tag: icao
+        field: icao_code
+        transform: upper
+
+  # ──────────────────────────────────────────────────────
+  # Admin layer classes (processed in the admin osmium pass)
+  # ──────────────────────────────────────────────────────
+
+  - name: Country
+    base_score: 0.75
+    layer: admin
+    match:
+      - key: place
+        values: [country]
+
+  - name: Region
+    base_score: 0.55
+    layer: admin
+    match:
+      - key: admin_level
+        values: ["4"]
+
+  - name: City
+    base_score: 0.65
+    layer: admin
+    match:
+      - key: admin_level
+        values: ["6", "7", "8"]
+      - key: place
+        values: [city, town, village]
+
+  - name: Neighborhood
+    base_score: 0.45
+    layer: admin
+    match:
+      - key: admin_level
+        values: ["9", "10"]
+      - key: place
+        values: [suburb, neighbourhood, neighborhood, quarter]
+
+  - name: Island
+    base_score: 0.50
+    layer: admin
+    match:
+      - key: place
+        values: [island, islet]

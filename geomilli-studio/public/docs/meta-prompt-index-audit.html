@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Meta Prompt: Meilisearch Index Audit &amp; Program Correctness Check | Geomilli</title>
+    <meta name="description" content="Open-Source Geospatial Search & OpenStreetMap Intelligence Powered by Meilisearch">
+    <meta name="generator" content="VitePress v1.6.4">
+    <link rel="preload stylesheet" href="/docs/assets/style.DTFWUwXN.css" as="style">
+    <link rel="preload stylesheet" href="/docs/vp-icons.css" as="style">
+    
+    <script type="module" src="/docs/assets/app.sVzqdYn6.js"></script>
+    <link rel="preload" href="/docs/assets/inter-roman-latin.Di8DUHzh.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="modulepreload" href="/docs/assets/chunks/framework.RycU2wFZ.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/theme.BURQzgLr.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/katex.C5jXJg4s.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/sizeCapture-INFHLROL.NtzrCcN0.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/dagre-GXQ25YYZ.CbZgCTa9.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/swimlanes-42K2YHIH.4xVo2OGL.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/cose-bilkent-JH36ORCC.CCnV1Skh.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/c4Diagram-7LVT6UL2.CctDjo81.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/flowDiagram-HODETNUW.-zgmUWmm.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/swimlanesDiagram-VR7AAH4N.CsyE9oFj.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/erDiagram-RLTQ6QDP.BL_MlVi8.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/gitGraphDiagram-WWUBYQGX.CL4KkmUs.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/ganttDiagram-EL5Y4UJY.D1NtV_gP.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/infoDiagram-27XIBGKW.BfZbDJZr.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/pieDiagram-E7YTZNPT.M_ugq3Cx.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/quadrantDiagram-AXDQQJYC.SPPiRbsv.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/xychartDiagram-S5SC5T6Z.CeZCwK26.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/requirementDiagram-BXWQKSXE.B7fTn73y.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/sequenceDiagram-WJ2MYXX4.Bl9BxqvT.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/classDiagram-ZZMXUADV.DEgN0OPQ.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/classDiagram-v2-VYDZK3BY.DEgN0OPQ.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/stateDiagram-D77RDMKH.DE2SevCV.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/stateDiagram-v2-MP3YSRHH.1DciS5hO.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/journeyDiagram-3NMN7TZE.B_2W9NpW.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/timeline-definition-24CTP7MA.CDg_l7ZK.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/mindmap-definition-YA3MSWOX.DbEgomgE.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/kanban-definition-UXKFOSKX.Cb7q1pLl.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/sankeyDiagram-P5KCCOFB.BtsiA31b.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/diagram-Z3DM3KII.BkbA5IyN.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/diagram-UQ7AKVKN.OXY84F77.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/blockDiagram-I7D4REHJ.J6p_7ncQ.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/diagram-S7CK7UJ4.CwzMuhLL.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/architectureDiagram-5GKGNRK7.DcCNqWlD.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/diagram-VSXAHHWV.ayINIEwF.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/ishikawaDiagram-5VMMS53U.DkLzsxgy.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/vennDiagram-4TSXK5OY.QsjOTl97.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/diagram-VX7I27RA.BOaG2S-J.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/wardleyDiagram-VM6X3IG4.DkRd2U-1.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/cynefinDiagram-5FMLGOSQ.B2qsVxV0.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/railroadDiagram-O6MQD6OU.C4zYE489.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/ebnfDiagram-PWID7BFC.BUy6l_s0.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/abnfDiagram-VCTEODGH.47vA6Ngn.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/pegDiagram-XKGWAZYB.bNSsSZba.js">
+    <link rel="modulepreload" href="/docs/assets/chunks/virtual_mermaid-config.DDnGl6nM.js">
+    <link rel="modulepreload" href="/docs/assets/meta-prompt-index-audit.md.BjF5xaMe.lean.js">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="theme-color" content="#3b82f6">
+    <script id="check-dark-mode">(()=>{const e=localStorage.getItem("vitepress-theme-appearance")||"auto",a=window.matchMedia("(prefers-color-scheme: dark)").matches;(!e||e==="auto"?a:e==="dark")&&document.documentElement.classList.add("dark")})();</script>
+    <script id="check-mac-os">document.documentElement.classList.toggle("mac",/Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
+  </head>
+  <body>
+    <div id="app"><div class="Layout" data-v-d8b57b2d><!--[--><!--]--><!--[--><span tabindex="-1" data-v-fcbfc0e0></span><a href="#VPContent" class="VPSkipLink visually-hidden" data-v-fcbfc0e0>Skip to content</a><!--]--><!----><header class="VPNav" data-v-d8b57b2d data-v-7ad780c2><div class="VPNavBar" data-v-7ad780c2 data-v-9fd4d1dd><div class="wrapper" data-v-9fd4d1dd><div class="container" data-v-9fd4d1dd><div class="title" data-v-9fd4d1dd><div class="VPNavBarTitle" data-v-9fd4d1dd data-v-9f43907a><a class="title" href="/docs/" data-v-9f43907a><!--[--><!--]--><!--[--><img class="VPImage logo" src="/docs/logo.svg" alt data-v-ab19afbb><!--]--><span data-v-9f43907a>Geomilli</span><!--[--><!--]--></a></div></div><div class="content" data-v-9fd4d1dd><div class="content-body" data-v-9fd4d1dd><!--[--><!--]--><div class="VPNavBarSearch search" data-v-9fd4d1dd><!--[--><!----><div id="local-search"><button type="button" class="DocSearch DocSearch-Button" aria-label="Search"><span class="DocSearch-Button-Container"><span class="vp-icon DocSearch-Search-Icon"></span><span class="DocSearch-Button-Placeholder">Search</span></span><span class="DocSearch-Button-Keys"><kbd class="DocSearch-Button-Key"></kbd><kbd class="DocSearch-Button-Key">K</kbd></span></button></div><!--]--></div><nav aria-labelledby="main-nav-aria-label" class="VPNavBarMenu menu" data-v-9fd4d1dd data-v-afb2845e><span id="main-nav-aria-label" class="visually-hidden" data-v-afb2845e> Main Navigation </span><!--[--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/docs/guide/quickstart" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>Guide</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/docs/harvester/configuration" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>Harvester</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/docs/api/overview" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>API Reference</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/docs/studio/playground-and-metrics" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>Studio UI</span><!--]--></a><!--]--><!--[--><div class="VPFlyout VPNavBarMenuGroup" data-v-afb2845e data-v-bfe7971f><button type="button" class="button" aria-haspopup="true" aria-expanded="false" data-v-bfe7971f><span class="text" data-v-bfe7971f><!----><span data-v-bfe7971f>v1.0.0</span><span class="vpi-chevron-down text-icon" data-v-bfe7971f></span></span></button><div class="menu" data-v-bfe7971f><div class="VPMenu" data-v-bfe7971f data-v-20ed86d6><div class="items" data-v-20ed86d6><!--[--><!--[--><div class="VPMenuLink" data-v-20ed86d6 data-v-7eeeb2dc><a class="VPLink link vp-external-link-icon" href="https://github.com/geomilli/geomilli/releases" target="_blank" rel="noreferrer" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>GitHub Release</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-20ed86d6 data-v-7eeeb2dc><a class="VPLink link" href="/api/openapi.yaml" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>OpenAPI 3.1 Spec</span><!--]--></a></div><!--]--><!--]--></div><!--[--><!--]--></div></div></div><!--]--><!--]--></nav><!----><div class="VPNavBarAppearance appearance" data-v-9fd4d1dd data-v-3f90c1a5><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-3f90c1a5 data-v-be9742d9 data-v-b4ccac88><span class="check" data-v-b4ccac88><span class="icon" data-v-b4ccac88><!--[--><span class="vpi-sun sun" data-v-be9742d9></span><span class="vpi-moon moon" data-v-be9742d9></span><!--]--></span></span></button></div><div class="VPSocialLinks VPNavBarSocialLinks social-links" data-v-9fd4d1dd data-v-ef6192dc data-v-e71e869c><!--[--><a class="VPSocialLink no-icon" href="https://github.com/geomilli/geomilli" aria-label="github" target="_blank" rel="noopener" data-v-e71e869c data-v-60a9a2d3><span class="vpi-social-github"></span></a><!--]--></div><div class="VPFlyout VPNavBarExtra extra" data-v-9fd4d1dd data-v-f953d92f data-v-bfe7971f><button type="button" class="button" aria-haspopup="true" aria-expanded="false" aria-label="extra navigation" data-v-bfe7971f><span class="vpi-more-horizontal icon" data-v-bfe7971f></span></button><div class="menu" data-v-bfe7971f><div class="VPMenu" data-v-bfe7971f data-v-20ed86d6><!----><!--[--><!--[--><!----><div class="group" data-v-f953d92f><div class="item appearance" data-v-f953d92f><p class="label" data-v-f953d92f>Appearance</p><div class="appearance-action" data-v-f953d92f><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-f953d92f data-v-be9742d9 data-v-b4ccac88><span class="check" data-v-b4ccac88><span class="icon" data-v-b4ccac88><!--[--><span class="vpi-sun sun" data-v-be9742d9></span><span class="vpi-moon moon" data-v-be9742d9></span><!--]--></span></span></button></div></div></div><div class="group" data-v-f953d92f><div class="item social-links" data-v-f953d92f><div class="VPSocialLinks social-links-list" data-v-f953d92f data-v-e71e869c><!--[--><a class="VPSocialLink no-icon" href="https://github.com/geomilli/geomilli" aria-label="github" target="_blank" rel="noopener" data-v-e71e869c data-v-60a9a2d3><span class="vpi-social-github"></span></a><!--]--></div></div></div><!--]--><!--]--></div></div></div><!--[--><!--]--><button type="button" class="VPNavBarHamburger hamburger" aria-label="mobile navigation" aria-expanded="false" aria-controls="VPNavScreen" data-v-9fd4d1dd data-v-6bee1efd><span class="container" data-v-6bee1efd><span class="top" data-v-6bee1efd></span><span class="middle" data-v-6bee1efd></span><span class="bottom" data-v-6bee1efd></span></span></button></div></div></div></div><div class="divider" data-v-9fd4d1dd><div class="divider-line" data-v-9fd4d1dd></div></div></div><!----></header><div class="VPLocalNav empty fixed" data-v-d8b57b2d data-v-2488c25a><div class="container" data-v-2488c25a><!----><div class="VPLocalNavOutlineDropdown" style="--vp-vh:0px;" data-v-2488c25a data-v-6b867909><button data-v-6b867909>Return to top</button><!----></div></div></div><!----><div class="VPContent" id="VPContent" data-v-d8b57b2d data-v-9a6c75ad><div class="VPDoc has-aside" data-v-9a6c75ad data-v-e6f2a212><!--[--><!--]--><div class="container" data-v-e6f2a212><div class="aside" data-v-e6f2a212><div class="aside-curtain" data-v-e6f2a212></div><div class="aside-container" data-v-e6f2a212><div class="aside-content" data-v-e6f2a212><div class="VPDocAside" data-v-e6f2a212 data-v-cb998dce><!--[--><!--]--><!--[--><!--]--><nav aria-labelledby="doc-outline-aria-label" class="VPDocAsideOutline" data-v-cb998dce data-v-f610f197><div class="content" data-v-f610f197><div class="outline-marker" data-v-f610f197></div><div aria-level="2" class="outline-title" id="doc-outline-aria-label" role="heading" data-v-f610f197>On this page</div><ul class="VPDocOutlineItem root" data-v-f610f197 data-v-53c99d69><!--[--><!--]--></ul></div></nav><!--[--><!--]--><div class="spacer" data-v-cb998dce></div><!--[--><!--]--><!----><!--[--><!--]--><!--[--><!--]--></div></div></div></div><div class="content" data-v-e6f2a212><div class="content-container" data-v-e6f2a212><!--[--><!--]--><main class="main" data-v-e6f2a212><div style="position:relative;" class="vp-doc _docs_meta-prompt-index-audit" data-v-e6f2a212><div><h1 id="meta-prompt-meilisearch-index-audit-program-correctness-check" tabindex="-1">Meta Prompt: Meilisearch Index Audit &amp; Program Correctness Check <a class="header-anchor" href="#meta-prompt-meilisearch-index-audit-program-correctness-check" aria-label="Permalink to &quot;Meta Prompt: Meilisearch Index Audit &amp; Program Correctness Check&quot;">​</a></h1><p>Copy everything in the fenced block below into a new chat session. It gives the assistant enough context about this pipeline to (1) list the indices on the local Meilisearch instance and (2) verify the program is behaving correctly.</p><hr><div class="language-text vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">text</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>You are auditing a Go data pipeline called &quot;auto-complete&quot; that builds two</span></span>
+<span class="line"><span>Meilisearch datasets for a travel autosuggest API.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Workspace</span></span>
+<span class="line"><span>- Repo root: /Users/a670090449/Documents/travayo-v2/auto-complete</span></span>
+<span class="line"><span>- Language: Go 1.25 (uses modernc.org/sqlite, meilisearch-go)</span></span>
+<span class="line"><span>- Search engine: Meilisearch running locally</span></span>
+<span class="line"><span>- Config is loaded from `.env` at repo root.</span></span>
+<span class="line"><span>  - MEILI_HOST (default http://127.0.0.1:7700)</span></span>
+<span class="line"><span>  - MEILI_API_KEY (read from .env; do NOT print the key value back to me)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## What the pipeline produces</span></span>
+<span class="line"><span>Two live indices:</span></span>
+<span class="line"><span>- `places`  : cities, regions, neighborhoods, airports, train stations,</span></span>
+<span class="line"><span>              attractions, stadiums (OSM + OurAirports sources)</span></span>
+<span class="line"><span>- `hotels`  : hotel properties (Agoda feed)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## How indexing works (important for correctness reasoning)</span></span>
+<span class="line"><span>- The indexer uses BLUE/GREEN indexing.</span></span>
+<span class="line"><span>- For each run it builds a shadow index named `&lt;base&gt;__build_&lt;UTCtimestamp&gt;`,</span></span>
+<span class="line"><span>  e.g. `places__build_20260616231238`.</span></span>
+<span class="line"><span>- It uploads docs to the shadow, waits for Meilisearch task completion,</span></span>
+<span class="line"><span>  runs golden-query validation, then atomically swaps the shadow into the</span></span>
+<span class="line"><span>  live base name via the `/swap-indexes` endpoint.</span></span>
+<span class="line"><span>- Hotels indexing runs with `--allow-empty=true`: if 0 docs are produced it</span></span>
+<span class="line"><span>  SKIPS validation and swap (so a live `hotels` index may legitimately not</span></span>
+<span class="line"><span>  exist yet if the hotels feed has produced 0 rows).</span></span>
+<span class="line"><span>- Orchestrator entrypoint: `go run ./cmd/pipeline --stage run --target all`</span></span>
+<span class="line"><span>  (or `make run`). Stages: fetch | build-data | index | run | cleanup.</span></span>
+<span class="line"><span>- Cleanup entrypoint: `make cleanup` -&gt; `cmd/cleanup`.</span></span>
+<span class="line"><span>  - Groups indices by `&lt;base&gt;__build_` prefix.</span></span>
+<span class="line"><span>  - Keeps the newest N shadow builds per base (`--keep-builds`, default 3).</span></span>
+<span class="line"><span>  - Deletes older shadow builds. It does NOT delete live base indices.</span></span>
+<span class="line"><span>  - Also prunes manifests in `data/manifests/` older than `--keep-manifest-days`.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Known problem to investigate</span></span>
+<span class="line"><span>The pipeline has been run many times and has accumulated too many leftover</span></span>
+<span class="line"><span>`__build_&lt;timestamp&gt;` shadow indices that were never cleaned up. There may also</span></span>
+<span class="line"><span>be `hotels__build_*` shadows that were never swapped to a live `hotels` index</span></span>
+<span class="line"><span>because the hotels feed produced 0 documents.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Your tasks</span></span>
+<span class="line"><span>1. Fetch the list of index names on the local Meilisearch.</span></span>
+<span class="line"><span>   - Read MEILI_HOST and MEILI_API_KEY from `.env`.</span></span>
+<span class="line"><span>   - Call `GET {MEILI_HOST}/indexes?limit=1000` with</span></span>
+<span class="line"><span>     `Authorization: Bearer {MEILI_API_KEY}` if the key is set.</span></span>
+<span class="line"><span>   - Print, for each index: uid, primaryKey, and numberOfDocuments</span></span>
+<span class="line"><span>     (numberOfDocuments comes from `GET {host}/indexes/{uid}/stats`).</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>2. Classify each index as:</span></span>
+<span class="line"><span>   - LIVE base (`places`, `hotels`)</span></span>
+<span class="line"><span>   - SHADOW build (`&lt;base&gt;__build_&lt;timestamp&gt;`)</span></span>
+<span class="line"><span>   - UNKNOWN/orphan (anything else)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>3. Check program correctness against these expectations:</span></span>
+<span class="line"><span>   - A live `places` index exists and has a non-trivial document count</span></span>
+<span class="line"><span>     (expected on the order of ~19k docs for the configured countries; treat</span></span>
+<span class="line"><span>     0 docs as a failure).</span></span>
+<span class="line"><span>   - `places` primaryKey is `id`.</span></span>
+<span class="line"><span>   - Document IDs are valid Meilisearch IDs (alphanumeric, `-`, `_`, &lt;=511</span></span>
+<span class="line"><span>     bytes). Sample a few docs via</span></span>
+<span class="line"><span>     `POST {host}/indexes/places/search` with body {&quot;q&quot;:&quot;&quot;,&quot;limit&quot;:5} and</span></span>
+<span class="line"><span>     confirm each `id` looks valid (no `&lt;nil&gt;`, no spaces/slashes).</span></span>
+<span class="line"><span>   - Run the golden queries in `config/golden_queries_places.txt`</span></span>
+<span class="line"><span>     (format: `query|expected_token_1,expected_token_2`, `#` = comment) against</span></span>
+<span class="line"><span>     the live `places` index and confirm each query returns hits containing the</span></span>
+<span class="line"><span>     expected tokens.</span></span>
+<span class="line"><span>   - Count shadow `__build_` indices per base. If more than 3 per base exist,</span></span>
+<span class="line"><span>     report it as cleanup debt.</span></span>
+<span class="line"><span>   - Note whether a live `hotels` index exists. If only `hotels__build_*`</span></span>
+<span class="line"><span>     shadows exist and no live `hotels`, explain that this is expected when the</span></span>
+<span class="line"><span>     hotels feed yields 0 docs (allow-empty mode) — not necessarily a bug.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>4. Produce a concise report:</span></span>
+<span class="line"><span>   - Table of all indices (uid | type | docs | primaryKey)</span></span>
+<span class="line"><span>   - PASS/FAIL for each correctness expectation above</span></span>
+<span class="line"><span>   - Cleanup recommendation. To prune shadows safely, the intended command is:</span></span>
+<span class="line"><span>       make cleanup            # keeps newest 3 builds per base</span></span>
+<span class="line"><span>     or to keep only the latest build:</span></span>
+<span class="line"><span>       go run ./cmd/cleanup --keep-builds 1</span></span>
+<span class="line"><span>   - Do NOT delete the live `places` (or live `hotels`) index.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Guardrails</span></span>
+<span class="line"><span>- Treat the local Meilisearch as the source of truth; the `.env` host/key are</span></span>
+<span class="line"><span>  the connection details.</span></span>
+<span class="line"><span>- Never print the API key value.</span></span>
+<span class="line"><span>- Do not delete any index unless I explicitly ask. First show me the report and</span></span>
+<span class="line"><span>  the proposed cleanup command.</span></span></code></pre></div><hr><h2 id="quick-reference-for-the-human-not-the-prompt" tabindex="-1">Quick reference (for the human, not the prompt) <a class="header-anchor" href="#quick-reference-for-the-human-not-the-prompt" aria-label="Permalink to &quot;Quick reference (for the human, not the prompt)&quot;">​</a></h2><ul><li>List indices manually:<div class="language-bash vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">bash</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">KEY</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">$(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">grep</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -E</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> &#39;^MEILI_API_KEY=&#39;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> .env</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> |</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;"> cut</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -d=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -f2-</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">HOST</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">$(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">grep</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -E</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> &#39;^MEILI_HOST=&#39;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> .env</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> |</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;"> cut</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -d=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -f2-</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">curl</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -s</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> -H</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> &quot;Authorization: Bearer ${</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">KEY</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">}&quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> &quot;${</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">HOST</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">}/indexes?limit=1000&quot;</span></span></code></pre></div></li><li>Prune leftover shadow indices (keeps newest 3 per base by default):<div class="language-bash vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">bash</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">make</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> cleanup</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"># or keep only the newest build per base:</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">go</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> run</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> ./cmd/cleanup</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> --keep-builds</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 1</span></span></code></pre></div></li><li>Cleanup never removes live base indices (<code>places</code>, <code>hotels</code>); it only trims <code>&lt;base&gt;__build_&lt;timestamp&gt;</code> shadows.</li></ul></div></div></main><footer class="VPDocFooter" data-v-e6f2a212 data-v-1bcd8184><!--[--><!--]--><div class="edit-info" data-v-1bcd8184><!----><div class="last-updated" data-v-1bcd8184><p class="VPLastUpdated" data-v-1bcd8184 data-v-1bb0c8a8>Last updated: <time datetime="2026-06-18T18:42:34.000Z" data-v-1bb0c8a8></time></p></div></div><!----></footer><!--[--><!--]--></div></div></div><!--[--><!--]--></div></div><footer class="VPFooter" data-v-d8b57b2d data-v-566314d4><div class="container" data-v-566314d4><p class="message" data-v-566314d4>Released under the Apache 2.0 License.</p><p class="copyright" data-v-566314d4>Copyright © 2026 Geomilli Contributors</p></div></footer><!--[--><!--]--></div></div>
+    <script>window.__VP_HASH_MAP__=JSON.parse("{\"api_autocomplete-and-search.md\":\"D4TUh9aL\",\"api_geospatial-apis.md\":\"DvpPR8wi\",\"api_overview.md\":\"zloEpvVO\",\"guide_architecture.md\":\"D1xzhD8P\",\"guide_meilisearch-local-vs-cloud.md\":\"DPQTA-ZQ\",\"guide_quickstart.md\":\"C9qp0Nw_\",\"guide_streaming-and-memory.md\":\"CcmwvM49\",\"harvester_configuration.md\":\"0T680ktc\",\"harvester_enrichment-and-caching.md\":\"hVnURjmW\",\"harvester_taxonomy-and-languages.md\":\"BfGQ6dDe\",\"index.md\":\"BaGbJGBm\",\"meta-prompt-index-audit.md\":\"BjF5xaMe\",\"osm-data-guide.md\":\"Cui0wJY1\",\"service-overview.md\":\"KQjwFHna\",\"source-inventory.md\":\"Bq6jewUT\",\"studio_playground-and-metrics.md\":\"DTm2ebsX\"}");window.__VP_SITE_DATA__=JSON.parse("{\"lang\":\"en-US\",\"dir\":\"ltr\",\"title\":\"Geomilli\",\"description\":\"Open-Source Geospatial Search & OpenStreetMap Intelligence Powered by Meilisearch\",\"base\":\"/docs/\",\"head\":[],\"router\":{\"prefetchLinks\":true},\"appearance\":true,\"themeConfig\":{\"siteTitle\":\"Geomilli\",\"logo\":\"/logo.svg\",\"nav\":[{\"text\":\"Guide\",\"link\":\"/guide/quickstart\"},{\"text\":\"Harvester\",\"link\":\"/harvester/configuration\"},{\"text\":\"API Reference\",\"link\":\"/api/overview\"},{\"text\":\"Studio UI\",\"link\":\"/studio/playground-and-metrics\"},{\"text\":\"v1.0.0\",\"items\":[{\"text\":\"GitHub Release\",\"link\":\"https://github.com/geomilli/geomilli/releases\"},{\"text\":\"OpenAPI 3.1 Spec\",\"link\":\"/api/openapi.yaml\"}]}],\"sidebar\":{\"/guide/\":[{\"text\":\"Getting Started\",\"items\":[{\"text\":\"60-Second Quickstart\",\"link\":\"/guide/quickstart\"},{\"text\":\"System Architecture\",\"link\":\"/guide/architecture\"},{\"text\":\"O(1) Streaming & Memory\",\"link\":\"/guide/streaming-and-memory\"},{\"text\":\"Meilisearch: Local vs Cloud\",\"link\":\"/guide/meilisearch-local-vs-cloud\"}]}],\"/harvester/\":[{\"text\":\"Harvester Pipeline\",\"items\":[{\"text\":\"Configuration & Countries\",\"link\":\"/harvester/configuration\"},{\"text\":\"Taxonomy & Languages\",\"link\":\"/harvester/taxonomy-and-languages\"},{\"text\":\"Enrichment & WAL Caching\",\"link\":\"/harvester/enrichment-and-caching\"}]}],\"/api/\":[{\"text\":\"REST API\",\"items\":[{\"text\":\"API Overview & Auth\",\"link\":\"/api/overview\"},{\"text\":\"Autocomplete & Search\",\"link\":\"/api/autocomplete-and-search\"},{\"text\":\"Geospatial & POI APIs\",\"link\":\"/api/geospatial-apis\"}]}],\"/studio/\":[{\"text\":\"Geomilli Studio\",\"items\":[{\"text\":\"Playground & Metrics\",\"link\":\"/studio/playground-and-metrics\"}]}]},\"search\":{\"provider\":\"local\"},\"socialLinks\":[{\"icon\":\"github\",\"link\":\"https://github.com/geomilli/geomilli\"}],\"footer\":{\"message\":\"Released under the Apache 2.0 License.\",\"copyright\":\"Copyright © 2026 Geomilli Contributors\"}},\"locales\":{},\"scrollOffset\":134,\"cleanUrls\":true}");</script>
+    
+  </body>
+</html>

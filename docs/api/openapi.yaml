@@ -1,0 +1,676 @@
+openapi: 3.1.0
+info:
+  title: Geomilli API
+  summary: High-Performance OpenStreetMap Intelligence & Geospatial Search API
+  description: |
+    Geomilli exposes sub-10ms autocomplete, full-text faceted discovery, reverse geocoding,
+    geo-radius POI queries, bounding-box viewport streams, and airport lookups powered by Meilisearch.
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:8080/v1
+    description: Local Docker Development Server
+  - url: https://api.geomilli.com/v1
+    description: Production Cluster
+paths:
+  /autocomplete:
+    get:
+      summary: Keystroke Autocomplete
+      description: Returns sub-10ms prefix completions with language localization and geo-proximity scoring.
+      operationId: getAutocomplete
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          example: Brux
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+          example: fr
+        - name: country
+          in: query
+          required: false
+          schema:
+            type: string
+          example: BE
+        - name: class
+          in: query
+          required: false
+          schema:
+            type: string
+          example: City
+        - name: subclass
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: lat
+          in: query
+          required: false
+          schema:
+            type: number
+            format: float
+          example: 50.8466
+        - name: lng
+          in: query
+          required: false
+          schema:
+            type: number
+            format: float
+          example: 4.3528
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful autocomplete match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /search:
+    get:
+      summary: Full-Text & Faceted Search
+      description: Rich discovery search supporting boolean filter expressions, facet distributions, and sorting.
+      operationId: searchPlaces
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          example: hotel
+        - name: facets
+          in: query
+          required: false
+          schema:
+            type: string
+          example: class,subclass,country_code,star_rating
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "country_code = 'BE' AND star_rating >= 4"
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "popularity_score:desc"
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Search results with facet distribution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+
+  /reverse:
+    get:
+      summary: Reverse Geocoding
+      description: Resolves lat/lng coordinates to administrative hierarchy and nearest street or landmark.
+      operationId: reverseGeocode
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 50.8467
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 4.3525
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 5
+      responses:
+        '200':
+          description: Reverse geocoded hierarchy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReverseResponse'
+
+  /nearby:
+    get:
+      summary: Nearby POIs by Radius
+      description: Returns places and points of interest within a given circular distance in meters.
+      operationId: nearbyPlaces
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 50.8467
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 4.3525
+        - name: radius
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1000
+          example: 1500
+        - name: class
+          in: query
+          required: false
+          schema:
+            type: string
+          example: Restaurant
+        - name: subclass
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cuisine
+          in: query
+          required: false
+          schema:
+            type: string
+          example: belgian
+        - name: min_stars
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Nearby places list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+
+  /bbox:
+    get:
+      summary: Bounding Box Viewport Query
+      description: Returns places bounded inside a geographic rectangular viewport for map rendering.
+      operationId: bboxPlaces
+      parameters:
+        - name: min_lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 50.8400
+        - name: min_lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 4.3400
+        - name: max_lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 50.8600
+        - name: max_lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+          example: 4.3700
+        - name: class
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: Places inside bounding box
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+
+  /places/{id}:
+    get:
+      summary: Place Details by ID
+      operationId: getPlaceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: relation_54094
+      responses:
+        '200':
+          description: Place record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Place'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /places/wikidata/{qid}:
+    get:
+      summary: Place Details by Wikidata ID
+      operationId: getPlaceByWikidata
+      parameters:
+        - name: qid
+          in: path
+          required: true
+          schema:
+            type: string
+          example: Q31
+      responses:
+        '200':
+          description: Place record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Place'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /airports:
+    get:
+      summary: List and Filter Airports
+      operationId: listAirports
+      parameters:
+        - name: country
+          in: query
+          required: false
+          schema:
+            type: string
+          example: BE
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Airport list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+
+  /airports/{code}:
+    get:
+      summary: Airport Lookup by IATA or ICAO
+      operationId: getAirportByCode
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: BRU
+      responses:
+        '200':
+          description: Airport details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Place'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /countries:
+    get:
+      summary: List Indexed Countries
+      operationId: listCountries
+      responses:
+        '200':
+          description: List of indexed countries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountrySummary'
+
+  /countries/{code}/regions:
+    get:
+      summary: List Country Regions
+      operationId: listCountryRegions
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: BE
+      responses:
+        '200':
+          description: List of regions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
+
+  /countries/{code}/cities:
+    get:
+      summary: List Country Cities
+      operationId: listCountryCities
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: BE
+      responses:
+        '200':
+          description: List of cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
+
+  /taxonomy:
+    get:
+      summary: Taxonomy Definition
+      operationId: getTaxonomy
+      responses:
+        '200':
+          description: 19 taxonomy classes and rules
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /languages:
+    get:
+      summary: Whitelisted Languages
+      operationId: getLanguages
+      responses:
+        '200':
+          description: Supported languages list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /metrics:
+    get:
+      summary: System & Telemetry Metrics
+      operationId: getMetrics
+      responses:
+        '200':
+          description: Real-time QPS, latency percentiles, and index statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemMetrics'
+
+  /health:
+    get:
+      summary: Health Check
+      operationId: getHealth
+      responses:
+        '200':
+          description: System healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  meilisearch:
+                    type: string
+                    example: connected
+
+components:
+  schemas:
+    Place:
+      type: object
+      required:
+        - id
+        - name
+        - class
+        - country_code
+        - _geo
+      properties:
+        id:
+          type: string
+          example: relation_54094
+        name:
+          type: string
+          example: Bruxelles - Brussel
+        class:
+          type: string
+          example: City
+        subclass:
+          type: string
+          example: city
+        country_code:
+          type: string
+          example: BE
+        names_by_language:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            en: Brussels
+            fr: Bruxelles
+            nl: Brussel
+        _geo:
+          type: object
+          required:
+            - lat
+            - lng
+          properties:
+            lat:
+              type: number
+              format: float
+              example: 50.8466
+            lng:
+              type: number
+              format: float
+              example: 4.3528
+        bbox:
+          type: array
+          items:
+            type: number
+          example: [4.3138, 50.7962, 4.4370, 50.9011]
+        iata:
+          type: string
+          example: BRU
+        icao:
+          type: string
+          example: EBBR
+        wikidata:
+          type: string
+          example: Q239
+        popularity_score:
+          type: number
+          format: float
+          example: 98.4
+        star_rating:
+          type: integer
+          example: 4
+        cuisine:
+          type: string
+          example: belgian
+
+    SearchResponse:
+      type: object
+      required:
+        - hits
+        - processingTimeMs
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+        query:
+          type: string
+        processingTimeMs:
+          type: integer
+          example: 3
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+        totalHits:
+          type: integer
+          example: 1
+        facetDistribution:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: integer
+
+    ReverseResponse:
+      type: object
+      properties:
+        hierarchy:
+          type: object
+          properties:
+            country:
+              $ref: '#/components/schemas/Place'
+            region:
+              $ref: '#/components/schemas/Place'
+            city:
+              $ref: '#/components/schemas/Place'
+            neighborhood:
+              $ref: '#/components/schemas/Place'
+        nearest_place:
+          $ref: '#/components/schemas/Place'
+
+    CountrySummary:
+      type: object
+      properties:
+        code:
+          type: string
+          example: BE
+        name:
+          type: string
+          example: Belgium
+        place_count:
+          type: integer
+          example: 184520
+
+    SystemMetrics:
+      type: object
+      properties:
+        qps:
+          type: number
+          example: 142.5
+        latency_p50_ms:
+          type: number
+          example: 2.1
+        latency_p95_ms:
+          type: number
+          example: 6.8
+        latency_p99_ms:
+          type: number
+          example: 14.3
+        total_requests:
+          type: integer
+          example: 849201
+        index_doc_count:
+          type: integer
+          example: 184520
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - status
+          properties:
+            code:
+              type: string
+              example: invalid_parameter
+            message:
+              type: string
+              example: Query parameter 'q' is required
+            status:
+              type: integer
+              example: 400
+
+  responses:
+    BadRequest:
+      description: Invalid query parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

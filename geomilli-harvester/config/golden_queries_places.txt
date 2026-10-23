@@ -1,0 +1,17 @@
+# Golden validation queries for places index (format: query|token1,token2)
+# Primary Belgian queries for default BE dataset (matches any token)
+brussels|brussels,bruxelles,brussel
+bruxelles|bruxelles,brussels,brussel
+brussel|brussel,brussels,bruxelles
+grand place|grand place,grote markt,brussels
+atomium|atomium
+antwerpen|antwerpen,antwerp
+gent|gent,ghent
+charleroi|charleroi
+bruges|bruges,brugge
+brugge|brugge,bruges
+liege|liege,liège,luik
+namur|namur,namen
+leuven|leuven,louvain
+mons|mons,bergen
+oostende|oostende,ostend
