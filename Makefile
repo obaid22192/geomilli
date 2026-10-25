@@ -30,8 +30,8 @@ up-cloud: ## Start services configured for external Meilisearch Cloud
 mcp: ## Run geomilli-mcp locally in stdio mode
 	(cd geomilli-mcp && go run ./cmd/geomilli-mcp)
 
-mcp-inspect: ## Launch MCP Inspector against local geomilli-mcp
-	npx @modelcontextprotocol/inspector go run ./geomilli-mcp/cmd/geomilli-mcp
+mcp-inspect: ## Launch MCP Inspector against local geomilli-mcp (avoids Studio :3000 collision)
+	(cd geomilli-mcp && PORT=6174 npx @modelcontextprotocol/inspector go run ./cmd/geomilli-mcp)
 
 ## 🧪 Testing & Verification
 test: ## Run test suites across all sub-projects
