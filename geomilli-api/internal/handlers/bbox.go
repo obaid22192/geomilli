@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/geomilli/geomilli-api/internal/meili"
@@ -25,35 +24,17 @@ type BBoxResponse struct {
 // BBox queries places within a map bounding box viewport.
 func (h *Handler) BBox(w http.ResponseWriter, r *http.Request) {
 	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
-	minLatStr := strings.TrimSpace(r.URL.Query().Get("min_lat"))
-	minLngStr := strings.TrimSpace(r.URL.Query().Get("min_lng"))
-	maxLatStr := strings.TrimSpace(r.URL.Query().Get("max_lat"))
-	maxLngStr := strings.TrimSpace(r.URL.Query().Get("max_lng"))
-
-	if minLatStr == "" || minLngStr == "" || maxLatStr == "" || maxLngStr == "" {
-		writeError(w, http.StatusBadRequest, "Parameters 'min_lat', 'min_lng', 'max_lat', and 'max_lng' are all required")
-		return
-	}
-
-	minLat, errMinLat := strconv.ParseFloat(minLatStr, 64)
-	minLng, errMinLng := strconv.ParseFloat(minLngStr, 64)
-	maxLat, errMaxLat := strconv.ParseFloat(maxLatStr, 64)
-	maxLng, errMaxLng := strconv.ParseFloat(maxLngStr, 64)
-
-	if errMinLat != nil || errMinLng != nil || errMaxLat != nil || errMaxLng != nil {
-		writeError(w, http.StatusBadRequest, "Invalid bounding box coordinates")
-		return
-	}
-
-	limit := 100
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if val, err := strconv.Atoi(l); err == nil && val > 0 {
-			if val > 500 {
-				val = 500
-			}
-			limit = val
+	minLat, minLng, maxLat, maxLng, err := parseBBox(r)
+	if err != nil {
+		if pErr, ok := err.(*ParamError); ok {
+			writeError(w, http.StatusBadRequest, pErr.Code, pErr.Message)
+			return
 		}
+		writeError(w, http.StatusBadRequest, ErrInvalidParameter, err.Error())
+		return
 	}
+
+	limit := parseLimit(r, DefaultBBoxLimit, MaxBBoxLimit)
 
 	// Meilisearch expects: _geoBoundingBox([top_left_lat, top_left_lng], [bottom_right_lat, bottom_right_lng])
 	var filters []string
@@ -71,7 +52,7 @@ func (h *Handler) BBox(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.meili.SearchPlaces(r.Context(), searchReq)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Bounding box search error: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Bounding box search error: "+err.Error())
 		return
 	}
 

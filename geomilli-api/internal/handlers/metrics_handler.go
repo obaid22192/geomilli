@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/geomilli/geomilli-api/internal/metrics"
+	"github.com/geomilli/geomilli-api/internal/version"
 )
 
 // GetMetrics returns real-time ring-buffer telemetry, QPS, latency percentiles, and system memory.
@@ -60,9 +61,9 @@ func (h *Handler) GetHealth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, statusCode, map[string]any{
-		"status":     apiStatus,
-		"version":    "1.0.0",
-		"timestamp":  time.Now().UTC().Format(time.RFC3339),
+		"status":    apiStatus,
+		"version":   version.Version,
+		"timestamp": time.Now().UTC().Format(time.RFC3339),
 		"meilisearch": map[string]any{
 			"status":     meiliStatus,
 			"mode":       h.getMeiliMode(),

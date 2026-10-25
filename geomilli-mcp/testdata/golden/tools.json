@@ -1,0 +1,2852 @@
+[
+  {
+    "name": "find_airports",
+    "description": "Search for airports by name, IATA code, ICAO code, country, or proximity to geographic coordinates. Returns matching airports with coordinates, codes, and location details.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "description": "ISO 3166-1 alpha-2 country code filter (e.g. 'BE', 'FR', 'US')",
+          "type": "string"
+        },
+        "iata": {
+          "description": "3-letter IATA airport code filter (e.g. 'BRU', 'LHR')",
+          "type": "string"
+        },
+        "icao": {
+          "description": "4-letter ICAO airport code filter (e.g. 'EBBR', 'EGLL')",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Preferred language code for localized airport and place names (e.g. 'en', 'fr')",
+          "type": "string"
+        },
+        "lat": {
+          "description": "Latitude coordinate (-90 to 90) for proximity-based ranking",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "limit": {
+          "description": "Maximum number of airports to return (default: 10, min: 1, max: 25)",
+          "type": "integer"
+        },
+        "lng": {
+          "description": "Longitude coordinate (-180 to 180) for proximity-based ranking",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "query": {
+          "description": "Free-text search query (e.g. 'Brussels', 'Heathrow', 'Charles de Gaulle')",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "airports": {
+          "description": "List of matching airports",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "total_hits": {
+          "description": "Total matching airports found",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_hits",
+        "airports"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "find_nearby",
+    "description": "Find points of interest (POIs) and destinations near coordinates within a specified radius (meters).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "description": "Filter by taxonomy class (e.g. 'Restaurant', 'Hotel', 'Attraction')",
+          "type": "string"
+        },
+        "cuisine": {
+          "description": "Filter by cuisine type (e.g. 'italian', 'french')",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Optional language code for place names (e.g. 'en', 'fr')",
+          "type": "string"
+        },
+        "lat": {
+          "description": "Latitude coordinate (-90 to 90)",
+          "type": "number"
+        },
+        "limit": {
+          "description": "Maximum places to return (default: 10, max: 25)",
+          "type": "integer"
+        },
+        "lng": {
+          "description": "Longitude coordinate (-180 to 180)",
+          "type": "number"
+        },
+        "min_stars": {
+          "description": "Minimum star rating for accommodation (1 to 5)",
+          "type": "integer"
+        },
+        "radius_meters": {
+          "description": "Search radius in meters (1 to 50000, default: 5000)",
+          "type": "integer"
+        },
+        "subclass": {
+          "description": "Filter by taxonomy subclass (e.g. 'museum', 'cafe')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lat",
+        "lng"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "description": "Center latitude",
+          "type": "number"
+        },
+        "lng": {
+          "description": "Center longitude",
+          "type": "number"
+        },
+        "places": {
+          "description": "List of nearby places sorted by distance",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "radius_meters": {
+          "description": "Effective search radius in meters",
+          "type": "integer"
+        },
+        "total_hits": {
+          "description": "Total matching places found",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "lat",
+        "lng",
+        "radius_meters",
+        "total_hits",
+        "places"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "geocode",
+    "description": "Forward geocoding: resolve place names, addresses, or landmarks into coordinates and candidate places.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "description": "Optional taxonomy class filter (e.g. 'City', 'Attraction', 'Airport', 'Hotel')",
+          "type": "string"
+        },
+        "country": {
+          "description": "Optional ISO 3166-1 alpha-2 country code to restrict results (e.g. 'BE', 'FR')",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Optional preferred language code for place names (e.g. 'en', 'fr')",
+          "type": "string"
+        },
+        "lat": {
+          "description": "Optional latitude for proximity-biased results (-90 to 90)",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "limit": {
+          "description": "Maximum candidate places to return (default: 10, max: 10)",
+          "type": "integer"
+        },
+        "lng": {
+          "description": "Optional longitude for proximity-biased results (-180 to 180)",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "query": {
+          "description": "Search query or place name to geocode (e.g. 'Atomium', 'Brussels', 'Grand Place')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "places": {
+          "description": "List of candidate places with coordinates and details",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "query": {
+          "description": "Search query that was geocoded",
+          "type": "string"
+        },
+        "total_hits": {
+          "description": "Total matching candidate places",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "query",
+        "total_hits",
+        "places"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "get_airport",
+    "description": "Retrieve detailed information for a specific airport by its 3-letter IATA code (e.g. 'BRU', 'JFK') or 4-letter ICAO code (e.g. 'EBBR', 'KJFK').",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "description": "3-letter IATA (e.g. 'BRU', 'JFK') or 4-letter ICAO (e.g. 'EBBR', 'KJFK') airport code",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Preferred language code for localized airport name (e.g. 'en', 'fr')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "airport": {
+          "additionalProperties": false,
+          "description": "Airport details",
+          "properties": {
+            "accommodation_type": {
+              "type": "string"
+            },
+            "admin_hierarchy": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "admin_level": {
+              "type": "integer"
+            },
+            "bbox": {
+              "items": {
+                "type": "number"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "class": {
+              "type": "string"
+            },
+            "country_code": {
+              "type": "string"
+            },
+            "country_name": {
+              "type": "string"
+            },
+            "cuisine": {
+              "type": "string"
+            },
+            "distance_meters": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "iata_code": {
+              "type": "string"
+            },
+            "icao_code": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "lat": {
+              "type": "number"
+            },
+            "lng": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "name_alt_active": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "name_alt_historical": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "names_by_language": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "popularity_score": {
+              "type": "number"
+            },
+            "population": {
+              "type": "integer"
+            },
+            "source": {
+              "type": "string"
+            },
+            "star_rating": {
+              "type": "integer"
+            },
+            "subclass": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "wikidata_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "class",
+            "lat",
+            "lng"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "airport"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "get_place",
+    "description": "Retrieve detailed metadata for a single place by its Geomilli ID or Wikidata QID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Geomilli place ID (e.g. 'osm_n123', 'place_456')",
+          "type": "string"
+        },
+        "include_nearby": {
+          "description": "Whether to include nearby points of interest",
+          "type": "boolean"
+        },
+        "lang": {
+          "description": "Optional language code for localized place names (e.g. 'en', 'fr')",
+          "type": "string"
+        },
+        "verbose": {
+          "description": "If true, returns full entity with all aliases, localized names, and metadata; if false, returns token-efficient compact place",
+          "type": "boolean"
+        },
+        "wikidata_id": {
+          "description": "Wikidata QID identifier (e.g. 'Q207')",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "full_entity": {
+          "additionalProperties": false,
+          "description": "Full place entity when verbose=true",
+          "properties": {
+            "_geo": {
+              "additionalProperties": false,
+              "properties": {
+                "lat": {
+                  "type": "number"
+                },
+                "lng": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "lat",
+                "lng"
+              ],
+              "type": "object"
+            },
+            "accommodation_type": {
+              "type": "string"
+            },
+            "admin_hierarchy": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "admin_level": {
+              "type": "integer"
+            },
+            "bbox": {
+              "items": {
+                "type": "number"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "class": {
+              "type": "string"
+            },
+            "country_code": {
+              "type": "string"
+            },
+            "country_name": {
+              "type": "string"
+            },
+            "cuisine": {
+              "type": "string"
+            },
+            "distance_meters": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "entity_id": {
+              "type": "string"
+            },
+            "iata_code": {
+              "type": "string"
+            },
+            "icao_code": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "name_alt_active": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "name_alt_historical": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "name_display": {
+              "type": "string"
+            },
+            "names_by_language": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "parent_entity_id": {
+              "type": "string"
+            },
+            "popularity_score": {
+              "type": "number"
+            },
+            "population": {
+              "type": "integer"
+            },
+            "source": {
+              "type": "string"
+            },
+            "star_rating": {
+              "type": "integer"
+            },
+            "subclass": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "wikidata_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "class",
+            "name_display",
+            "_geo",
+            "popularity_score"
+          ],
+          "type": [
+            "null",
+            "object"
+          ]
+        },
+        "nearby_places": {
+          "description": "Nearby places if include_nearby was requested",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "place": {
+          "additionalProperties": false,
+          "description": "Place details (compact view when verbose=false; includes all alternate names, languages, and source when verbose=true)",
+          "properties": {
+            "accommodation_type": {
+              "type": "string"
+            },
+            "admin_hierarchy": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "admin_level": {
+              "type": "integer"
+            },
+            "bbox": {
+              "items": {
+                "type": "number"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "class": {
+              "type": "string"
+            },
+            "country_code": {
+              "type": "string"
+            },
+            "country_name": {
+              "type": "string"
+            },
+            "cuisine": {
+              "type": "string"
+            },
+            "distance_meters": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "iata_code": {
+              "type": "string"
+            },
+            "icao_code": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "lat": {
+              "type": "number"
+            },
+            "lng": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "name_alt_active": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "name_alt_historical": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "names_by_language": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "popularity_score": {
+              "type": "number"
+            },
+            "population": {
+              "type": "integer"
+            },
+            "source": {
+              "type": "string"
+            },
+            "star_rating": {
+              "type": "integer"
+            },
+            "subclass": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "wikidata_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "class",
+            "lat",
+            "lng"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "place"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "get_service_status",
+    "description": "Retrieve consolidated operational health, harvester ingestion daemon status, and API telemetry metrics for the Geomilli cluster.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "health": {
+          "additionalProperties": false,
+          "description": "API service and search engine health probe",
+          "properties": {
+            "error": {
+              "description": "Error message if the health probe failed",
+              "type": "string"
+            },
+            "meilisearch": {
+              "additionalProperties": true,
+              "description": "Meilisearch status and connectivity details",
+              "type": "object"
+            },
+            "status": {
+              "description": "API health status: ok, degraded, down, or unreachable",
+              "type": "string"
+            },
+            "timestamp": {
+              "description": "Timestamp of the health check probe",
+              "type": "string"
+            },
+            "version": {
+              "description": "Geomilli API service version",
+              "type": "string"
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "type": "object"
+        },
+        "importer": {
+          "additionalProperties": false,
+          "description": "Harvester ingestion daemon status",
+          "properties": {
+            "active_job": {
+              "additionalProperties": false,
+              "description": "Currently active country ingestion job, if any",
+              "properties": {
+                "countries": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": [
+                    "null",
+                    "array"
+                  ]
+                },
+                "current_country": {
+                  "type": "string"
+                },
+                "docs_processed": {
+                  "type": "integer"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "progress_pct": {
+                  "type": "integer"
+                },
+                "stage": {
+                  "type": "string"
+                },
+                "started_at": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "job_id",
+                "countries",
+                "current_country",
+                "stage",
+                "progress_pct",
+                "docs_processed",
+                "started_at"
+              ],
+              "type": [
+                "null",
+                "object"
+              ]
+            },
+            "error": {
+              "description": "Error message if importer probe failed",
+              "type": "string"
+            },
+            "resources": {
+              "additionalProperties": false,
+              "description": "Harvester daemon memory and disk cache stats",
+              "properties": {
+                "disk_cache_mb": {
+                  "type": "number"
+                },
+                "disk_staging_mb": {
+                  "type": "number"
+                },
+                "heap_alloc_mb": {
+                  "type": "number"
+                },
+                "sqlite_cache_entries": {
+                  "type": "integer"
+                },
+                "sys_mem_mb": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "heap_alloc_mb",
+                "sys_mem_mb",
+                "disk_staging_mb",
+                "disk_cache_mb",
+                "sqlite_cache_entries"
+              ],
+              "type": [
+                "null",
+                "object"
+              ]
+            },
+            "state": {
+              "description": "Harvester daemon operational state (e.g. idle, running, stopped, unreachable)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state"
+          ],
+          "type": "object"
+        },
+        "metrics": {
+          "additionalProperties": false,
+          "description": "API telemetry and indexing performance metrics",
+          "properties": {
+            "active_qps": {
+              "description": "Current queries per second",
+              "type": "number"
+            },
+            "error": {
+              "description": "Error message if metrics probe failed",
+              "type": "string"
+            },
+            "index_docs": {
+              "description": "Total indexed place documents in Meilisearch",
+              "type": "integer"
+            },
+            "latency_p50_ms": {
+              "description": "Median request latency in milliseconds",
+              "type": "number"
+            },
+            "latency_p95_ms": {
+              "description": "95th percentile request latency in milliseconds",
+              "type": "number"
+            },
+            "total_requests": {
+              "description": "Total HTTP requests handled since startup",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "total_requests",
+            "active_qps",
+            "latency_p50_ms",
+            "latency_p95_ms",
+            "index_docs"
+          ],
+          "type": "object"
+        },
+        "overall_status": {
+          "description": "Synthesized health status: ok, degraded, or unhealthy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "overall_status",
+        "health",
+        "importer",
+        "metrics"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_cities",
+    "description": "List major cities and towns for a specific country by ISO 3166-1 alpha-2 country code, ordered by population and popularity score.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "country_code": {
+          "description": "ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE')",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Preferred language code for localized city names",
+          "type": "string"
+        },
+        "limit": {
+          "description": "Maximum number of cities to return (default: 20, min: 1, max: 100)",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Pagination offset (default: 0)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "country_code"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "cities": {
+          "description": "List of cities with coordinates and population",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "country_code": {
+          "description": "ISO 3166-1 alpha-2 country code",
+          "type": "string"
+        },
+        "limit": {
+          "description": "Pagination limit applied",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Pagination offset applied",
+          "type": "integer"
+        },
+        "total_hits": {
+          "description": "Total cities found in country",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "country_code",
+        "total_hits",
+        "limit",
+        "offset",
+        "cities"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_countries",
+    "description": "List all countries currently indexed in the Geomilli database along with total place counts. Use this to determine which countries have available geospatial data.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "countries": {
+          "description": "Indexed countries sorted by place count descending",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "country_code": {
+                "description": "ISO 3166-1 alpha-2 country code (e.g. BE, FR)",
+                "type": "string"
+              },
+              "country_name": {
+                "description": "Official or common name of the country",
+                "type": "string"
+              },
+              "place_count": {
+                "description": "Number of indexed places and destinations",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "country_code",
+              "country_name",
+              "place_count"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "total_countries": {
+          "description": "Total count of indexed countries",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_countries",
+        "countries"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_import_queue",
+    "description": "List the Harvester ingestion daemon queue, active worker slots, and pending country import tasks.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "active_workers": {
+          "description": "Currently active worker tasks",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "docs_processed": {
+                "type": "integer"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "progress_pct": {
+                "type": "integer"
+              },
+              "stage": {
+                "type": "string"
+              },
+              "started_at": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "country_code",
+              "country_name",
+              "stage",
+              "progress_pct",
+              "docs_processed",
+              "started_at",
+              "status"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "concurrency": {
+          "description": "Max concurrent country import workers configured",
+          "type": "integer"
+        },
+        "country_locks": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Active country locks held by workers",
+          "type": "object"
+        },
+        "queued_tasks": {
+          "description": "Queued country import tasks waiting for execution",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "enqueued_at": {
+                "type": "string"
+              },
+              "error": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string"
+              },
+              "online_enrich": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "country_code",
+              "country_name",
+              "online_enrich",
+              "mode",
+              "enqueued_at",
+              "status"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        }
+      },
+      "required": [
+        "concurrency",
+        "active_workers",
+        "queued_tasks"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_importable_countries",
+    "description": "List all countries available for OSM data download and ingestion by the Harvester daemon, including indexing status and sync schedules.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "continent": {
+          "description": "Optional filter: continent name to filter by (e.g. 'europe', 'north-america', 'asia')",
+          "type": "string"
+        },
+        "only_indexed": {
+          "description": "Optional filter: if true, returns only countries that are already indexed in the database",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "countries": {
+          "description": "List of countries with ingestion metadata and sync schedules",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "continent": {
+                "type": "string"
+              },
+              "doc_count": {
+                "type": "integer"
+              },
+              "geofabrik_path": {
+                "type": "string"
+              },
+              "is_indexed": {
+                "type": "boolean"
+              },
+              "last_built_at": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "next_run_at": {
+                "type": "string"
+              },
+              "schedule_status": {
+                "type": "string"
+              },
+              "size_mb": {
+                "type": "number"
+              },
+              "sync_interval_hours": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "code",
+              "name",
+              "continent",
+              "geofabrik_path",
+              "is_indexed"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "total_countries": {
+          "description": "Total matching countries returned",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_countries",
+        "countries"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_place_categories",
+    "description": "List the 19 canonical place categories and their taxonomy definitions, including layer (poi/admin), base ranking score, and known subclasses. Call this tool to discover valid category and class filters for search and discovery.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "categories": {
+          "description": "List of canonical place categories",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "base_score": {
+                "description": "Base ranking score for the class",
+                "type": "number"
+              },
+              "class": {
+                "description": "Canonical place class name (e.g. 'Restaurant', 'Hotel')",
+                "type": "string"
+              },
+              "layer": {
+                "description": "Taxonomy layer ('poi' or 'admin')",
+                "type": "string"
+              },
+              "subclasses": {
+                "description": "List of known subclasses for this class",
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              }
+            },
+            "required": [
+              "class",
+              "layer",
+              "base_score",
+              "subclasses"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "total_classes": {
+          "description": "Total number of canonical classes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_classes",
+        "categories"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_regions",
+    "description": "List administrative regions, provinces, or states for a specific country by ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE').",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "country_code": {
+          "description": "ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE')",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Preferred language code for localized region names (e.g. 'en', 'fr')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "country_code"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "country_code": {
+          "description": "ISO 3166-1 alpha-2 country code",
+          "type": "string"
+        },
+        "regions": {
+          "description": "List of administrative regions and provinces",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "total_hits": {
+          "description": "Total count of administrative regions/provinces found",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "country_code",
+        "total_hits",
+        "regions"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "measure_distance",
+    "description": "Calculate the great-circle distance between two geographic locations using the Haversine formula. Coordinates can be provided directly (lat/lng) or resolved automatically from Geomilli place IDs.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from_lat": {
+          "description": "Starting latitude coordinate (-90 to 90)",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "from_lng": {
+          "description": "Starting longitude coordinate (-180 to 180)",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "from_place_id": {
+          "description": "Starting place ID (resolved via API if coordinates omitted)",
+          "type": "string"
+        },
+        "to_lat": {
+          "description": "Destination latitude coordinate (-90 to 90)",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "to_lng": {
+          "description": "Destination longitude coordinate (-180 to 180)",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
+        "to_place_id": {
+          "description": "Destination place ID (resolved via API if coordinates omitted)",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "distance_km": {
+          "description": "Great-circle distance in kilometers (rounded to 2 decimals)",
+          "type": "number"
+        },
+        "distance_meters": {
+          "description": "Great-circle distance in meters (rounded to 1 decimal)",
+          "type": "number"
+        },
+        "distance_miles": {
+          "description": "Great-circle distance in miles (rounded to 2 decimals)",
+          "type": "number"
+        },
+        "from": {
+          "additionalProperties": false,
+          "description": "Starting location",
+          "properties": {
+            "name": {
+              "description": "Place name if resolved",
+              "type": "string"
+            },
+            "place_id": {
+              "description": "Place ID if resolved",
+              "type": "string"
+            },
+            "point": {
+              "additionalProperties": false,
+              "description": "Geographical coordinates",
+              "properties": {
+                "lat": {
+                  "description": "Latitude coordinate",
+                  "type": "number"
+                },
+                "lng": {
+                  "description": "Longitude coordinate",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "lat",
+                "lng"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "point"
+          ],
+          "type": "object"
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "Destination location",
+          "properties": {
+            "name": {
+              "description": "Place name if resolved",
+              "type": "string"
+            },
+            "place_id": {
+              "description": "Place ID if resolved",
+              "type": "string"
+            },
+            "point": {
+              "additionalProperties": false,
+              "description": "Geographical coordinates",
+              "properties": {
+                "lat": {
+                  "description": "Latitude coordinate",
+                  "type": "number"
+                },
+                "lng": {
+                  "description": "Longitude coordinate",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "lat",
+                "lng"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "point"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "distance_meters",
+        "distance_km",
+        "distance_miles"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "places_in_area",
+    "description": "Find places and destinations within a geographic bounding box defined by minimum and maximum latitude and longitude coordinates.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "description": "Optional filter by taxonomy class (e.g. 'Restaurant', 'Hotel')",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Optional language code for place names (e.g. 'en', 'fr')",
+          "type": "string"
+        },
+        "limit": {
+          "description": "Maximum places to return (default: 20, max: 25)",
+          "type": "integer"
+        },
+        "max_lat": {
+          "description": "Northern boundary latitude (-90 to 90)",
+          "type": "number"
+        },
+        "max_lng": {
+          "description": "Eastern boundary longitude (-180 to 180)",
+          "type": "number"
+        },
+        "min_lat": {
+          "description": "Southern boundary latitude (-90 to 90)",
+          "type": "number"
+        },
+        "min_lng": {
+          "description": "Western boundary longitude (-180 to 180)",
+          "type": "number"
+        }
+      },
+      "required": [
+        "min_lat",
+        "min_lng",
+        "max_lat",
+        "max_lng"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "max_lat": {
+          "description": "Northern boundary latitude",
+          "type": "number"
+        },
+        "max_lng": {
+          "description": "Eastern boundary longitude",
+          "type": "number"
+        },
+        "min_lat": {
+          "description": "Southern boundary latitude",
+          "type": "number"
+        },
+        "min_lng": {
+          "description": "Western boundary longitude",
+          "type": "number"
+        },
+        "places": {
+          "description": "Places within the bounding box",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "total_hits": {
+          "description": "Total matching places found in bounding box",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min_lat",
+        "min_lng",
+        "max_lat",
+        "max_lng",
+        "total_hits",
+        "places"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "reverse_geocode",
+    "description": "Reverse geocoding: resolve latitude and longitude coordinates into a structured address, administrative hierarchy, and closest place.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "lang": {
+          "description": "Optional language code for place names (e.g. 'en', 'fr')",
+          "type": "string"
+        },
+        "lat": {
+          "description": "Latitude coordinate (-90 to 90)",
+          "type": "number"
+        },
+        "lng": {
+          "description": "Longitude coordinate (-180 to 180)",
+          "type": "number"
+        },
+        "radius_meters": {
+          "description": "Search radius in meters (1 to 100000, default: 50000)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "lat",
+        "lng"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "address": {
+          "additionalProperties": false,
+          "description": "Structured address components",
+          "properties": {
+            "city": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            },
+            "country_code": {
+              "type": "string"
+            },
+            "landmark": {
+              "type": "string"
+            },
+            "neighborhood": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "admin_hierarchy": {
+          "description": "Administrative hierarchy from city to country",
+          "items": {
+            "type": "string"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "closest_place": {
+          "additionalProperties": false,
+          "description": "Closest place to the given coordinates",
+          "properties": {
+            "accommodation_type": {
+              "type": "string"
+            },
+            "admin_hierarchy": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "admin_level": {
+              "type": "integer"
+            },
+            "bbox": {
+              "items": {
+                "type": "number"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "class": {
+              "type": "string"
+            },
+            "country_code": {
+              "type": "string"
+            },
+            "country_name": {
+              "type": "string"
+            },
+            "cuisine": {
+              "type": "string"
+            },
+            "distance_meters": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "iata_code": {
+              "type": "string"
+            },
+            "icao_code": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "lat": {
+              "type": "number"
+            },
+            "lng": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "name_alt_active": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "name_alt_historical": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "names_by_language": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "popularity_score": {
+              "type": "number"
+            },
+            "population": {
+              "type": "integer"
+            },
+            "source": {
+              "type": "string"
+            },
+            "star_rating": {
+              "type": "integer"
+            },
+            "subclass": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "wikidata_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "class",
+            "lat",
+            "lng"
+          ],
+          "type": [
+            "null",
+            "object"
+          ]
+        },
+        "lat": {
+          "description": "Latitude of the query",
+          "type": "number"
+        },
+        "lng": {
+          "description": "Longitude of the query",
+          "type": "number"
+        },
+        "radius_meters": {
+          "description": "Effective search radius in meters",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "lat",
+        "lng",
+        "address",
+        "admin_hierarchy"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "search_places",
+    "description": "Search places, destinations, and points of interest using full-text search and structured filters (class, subclass, country, cuisine, star rating).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "description": "Filter by taxonomy class (e.g. 'Restaurant', 'Hotel', 'Attraction')",
+          "type": "string"
+        },
+        "country": {
+          "description": "Filter by 2-letter ISO country code (e.g. 'BE', 'FR')",
+          "type": "string"
+        },
+        "cuisine": {
+          "description": "Filter by cuisine type (e.g. 'italian', 'french', 'japanese')",
+          "type": "string"
+        },
+        "lang": {
+          "description": "Preferred language code for place names (e.g. 'en', 'fr')",
+          "type": "string"
+        },
+        "limit": {
+          "description": "Maximum places to return (default: 10, max: 25)",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Pagination offset (default: 0)",
+          "type": "integer"
+        },
+        "query": {
+          "description": "Full-text search keywords or place name",
+          "type": "string"
+        },
+        "star_rating": {
+          "description": "Filter by minimum star rating for hotels (1 to 5)",
+          "type": "integer"
+        },
+        "subclass": {
+          "description": "Filter by taxonomy subclass (e.g. 'museum', 'monument', 'cafe')",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "limit": {
+          "description": "Effective limit of places returned",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Offset applied to results",
+          "type": "integer"
+        },
+        "places": {
+          "description": "List of matching places",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accommodation_type": {
+                "type": "string"
+              },
+              "admin_hierarchy": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "admin_level": {
+                "type": "integer"
+              },
+              "bbox": {
+                "items": {
+                  "type": "number"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "cuisine": {
+                "type": "string"
+              },
+              "distance_meters": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "iata_code": {
+                "type": "string"
+              },
+              "icao_code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "name_alt_active": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "name_alt_historical": {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "null",
+                  "array"
+                ]
+              },
+              "names_by_language": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "popularity_score": {
+                "type": "number"
+              },
+              "population": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string"
+              },
+              "star_rating": {
+                "type": "integer"
+              },
+              "subclass": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              },
+              "wikidata_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "class",
+              "lat",
+              "lng"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "null",
+            "array"
+          ]
+        },
+        "query": {
+          "description": "Query string searched",
+          "type": "string"
+        },
+        "total_hits": {
+          "description": "Total matching places found",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_hits",
+        "limit",
+        "offset",
+        "places"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true
+    }
+  }
+]

@@ -64,6 +64,29 @@ jobs:
           cd geomilli-api
           go build -v ./...
 
+  test-mcp:
+    name: Test MCP Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache-dependency-path: geomilli-mcp/go.sum
+
+      - name: Run MCP server unit tests
+        run: |
+          cd geomilli-mcp
+          go test -v -race ./...
+
+      - name: Build MCP server binary
+        run: |
+          cd geomilli-mcp
+          go build -v ./...
+
   test-studio:
     name: Build Studio UI
     runs-on: ubuntu-latest
@@ -145,3 +168,11 @@ jobs:
           file: ./geomilli-harvester/Dockerfile
           push: false
           tags: geomilli-harvester:test
+
+      - name: Validate MCP Dockerfile build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./geomilli-mcp
+          file: ./geomilli-mcp/Dockerfile
+          push: false
+          tags: geomilli-mcp:test

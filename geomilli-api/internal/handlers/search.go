@@ -30,22 +30,8 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	sortParam := strings.TrimSpace(r.URL.Query().Get("sort"))
 	facetsParam := strings.TrimSpace(r.URL.Query().Get("facets"))
 
-	limit := 20
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if val, err := strconv.Atoi(l); err == nil && val > 0 {
-			if val > 100 {
-				val = 100
-			}
-			limit = val
-		}
-	}
-
-	offset := 0
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if val, err := strconv.Atoi(o); err == nil && val >= 0 {
-			offset = val
-		}
-	}
+	limit := parseLimit(r, DefaultSearchLimit, MaxSearchLimit)
+	offset := parseOffset(r)
 
 	var sortRules []string
 	if sortParam != "" {
@@ -112,7 +98,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.meili.SearchPlaces(r.Context(), searchReq)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Search error: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Search error: "+err.Error())
 		return
 	}
 

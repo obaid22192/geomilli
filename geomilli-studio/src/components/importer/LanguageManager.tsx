@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageItem } from '../../types';
-import { API_BASE } from '../../utils/api';
+import { API_BASE, parseApiError } from '../../utils/api';
 import {
   Languages,
   Search,
@@ -74,7 +74,8 @@ export const LanguageManager: React.FC<LanguageManagerProps> = ({
       });
 
       if (!res.ok) {
-        throw new Error(await res.text());
+        const errInfo = await parseApiError(res);
+        throw new Error(errInfo.message);
       }
 
       setLanguages((prev) =>
@@ -107,7 +108,8 @@ export const LanguageManager: React.FC<LanguageManagerProps> = ({
       });
 
       if (!res.ok) {
-        throw new Error(await res.text());
+        const errInfo = await parseApiError(res);
+        throw new Error(errInfo.message);
       }
 
       const data = await res.json();

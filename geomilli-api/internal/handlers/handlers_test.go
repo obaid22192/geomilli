@@ -499,6 +499,13 @@ func TestValidationAndEdgeCases(t *testing.T) {
 	if recRevBad.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for missing reverse params, got %d", recRevBad.Code)
 	}
+	var envRevBad ErrorEnvelope
+	if err := json.Unmarshal(recRevBad.Body.Bytes(), &envRevBad); err != nil {
+		t.Fatalf("failed to decode error envelope: %v", err)
+	}
+	if envRevBad.Error.Code != ErrMissingParameter {
+		t.Errorf("expected code %s, got %s", ErrMissingParameter, envRevBad.Error.Code)
+	}
 
 	// 2. Reverse geocoding with out-of-range coordinates
 	reqRevRange := httptest.NewRequest(http.MethodGet, "/v1/reverse?lat=150.0&lng=200.0", nil)
@@ -506,6 +513,13 @@ func TestValidationAndEdgeCases(t *testing.T) {
 	r.ServeHTTP(recRevRange, reqRevRange)
 	if recRevRange.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for out of range lat/lng, got %d", recRevRange.Code)
+	}
+	var envRevRange ErrorEnvelope
+	if err := json.Unmarshal(recRevRange.Body.Bytes(), &envRevRange); err != nil {
+		t.Fatalf("failed to decode error envelope: %v", err)
+	}
+	if envRevRange.Error.Code != ErrInvalidParameter {
+		t.Errorf("expected code %s, got %s", ErrInvalidParameter, envRevRange.Error.Code)
 	}
 
 	// 3. Nearby with invalid coordinates
@@ -515,6 +529,13 @@ func TestValidationAndEdgeCases(t *testing.T) {
 	if recNearBad.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for invalid nearby lat/lng, got %d", recNearBad.Code)
 	}
+	var envNearBad ErrorEnvelope
+	if err := json.Unmarshal(recNearBad.Body.Bytes(), &envNearBad); err != nil {
+		t.Fatalf("failed to decode error envelope: %v", err)
+	}
+	if envNearBad.Error.Code != ErrInvalidParameter {
+		t.Errorf("expected code %s, got %s", ErrInvalidParameter, envNearBad.Error.Code)
+	}
 
 	// 4. BBox with invalid bbox format
 	reqBBoxBad := httptest.NewRequest(http.MethodGet, "/v1/bbox?bbox=invalid", nil)
@@ -523,6 +544,13 @@ func TestValidationAndEdgeCases(t *testing.T) {
 	if recBBoxBad.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for invalid bbox, got %d", recBBoxBad.Code)
 	}
+	var envBBoxBad ErrorEnvelope
+	if err := json.Unmarshal(recBBoxBad.Body.Bytes(), &envBBoxBad); err != nil {
+		t.Fatalf("failed to decode error envelope: %v", err)
+	}
+	if envBBoxBad.Error.Code != ErrMissingParameter {
+		t.Errorf("expected code %s, got %s", ErrMissingParameter, envBBoxBad.Error.Code)
+	}
 
 	// 5. Place lookup not found (404)
 	reqPlace404 := httptest.NewRequest(http.MethodGet, "/v1/places/node:999999", nil)
@@ -530,6 +558,13 @@ func TestValidationAndEdgeCases(t *testing.T) {
 	r.ServeHTTP(recPlace404, reqPlace404)
 	if recPlace404.Code != http.StatusNotFound {
 		t.Errorf("expected 404 for unknown place, got %d", recPlace404.Code)
+	}
+	var envPlace404 ErrorEnvelope
+	if err := json.Unmarshal(recPlace404.Body.Bytes(), &envPlace404); err != nil {
+		t.Fatalf("failed to decode error envelope: %v", err)
+	}
+	if envPlace404.Error.Code != ErrNotFound {
+		t.Errorf("expected code %s, got %s", ErrNotFound, envPlace404.Error.Code)
 	}
 
 	// 6. Wikidata lookup by QID

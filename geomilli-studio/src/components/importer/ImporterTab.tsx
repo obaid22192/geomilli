@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ImporterStatus, CountryInfo } from '../../types';
-import { API_BASE } from '../../utils/api';
+import { API_BASE, parseApiError } from '../../utils/api';
 import { PipelineFlow } from './PipelineFlow';
 import { CountryManager } from './CountryManager';
 import { ResourceGauges } from './ResourceGauges';
@@ -161,7 +161,8 @@ export const ImporterTab: React.FC = () => {
       });
 
       if (!res.ok) {
-        throw new Error(await res.text());
+        const errInfo = await parseApiError(res);
+        throw new Error(errInfo.message);
       }
 
       const jobData = await res.json();
@@ -200,7 +201,10 @@ export const ImporterTab: React.FC = () => {
         }),
       });
 
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+        const errInfo = await parseApiError(res);
+        throw new Error(errInfo.message);
+      }
       const data = await res.json();
       setLogs((prev) => [
         ...prev,
@@ -244,7 +248,10 @@ export const ImporterTab: React.FC = () => {
       const res = await fetch(`${API_BASE}/importer/queue/dequeue?country=${countryCode}`, {
         method: 'POST',
       });
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+        const errInfo = await parseApiError(res);
+        throw new Error(errInfo.message);
+      }
       setLogs((prev) => [
         ...prev,
         `[queue] Dequeued country ${countryCode} from pending queue.`,
@@ -260,7 +267,10 @@ export const ImporterTab: React.FC = () => {
       const res = await fetch(`${API_BASE}/importer/queue`, {
         method: 'DELETE',
       });
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+        const errInfo = await parseApiError(res);
+        throw new Error(errInfo.message);
+      }
       setLogs((prev) => [...prev, `[queue] Cleared all pending tasks from worker queue.`]);
       refreshStatus();
     } catch (err: any) {
@@ -275,7 +285,10 @@ export const ImporterTab: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ worker_id: workerId, country_code: countryCode }),
       });
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+        const errInfo = await parseApiError(res);
+        throw new Error(errInfo.message);
+      }
       setLogs((prev) => [
         ...prev,
         `[queue] Abort requested for Worker #${workerId}${countryCode ? ` (${countryCode})` : ''}.`,

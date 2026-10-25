@@ -22,7 +22,7 @@ func (h *Handler) GetPlaceByID(w http.ResponseWriter, r *http.Request) {
 	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		writeError(w, http.StatusBadRequest, "Missing place ID")
+		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing place ID")
 		return
 	}
 
@@ -33,13 +33,13 @@ func (h *Handler) GetPlaceByID(w http.ResponseWriter, r *http.Request) {
 		filter := fmt.Sprintf(`entity_id = "%s" OR id = "%s"`, id, id)
 		place, err = h.meili.FindOneByFilter(r.Context(), filter)
 		if err != nil {
-			writeError(w, http.StatusInternalServerError, "Error retrieving place: "+err.Error())
+			writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Error retrieving place: "+err.Error())
 			return
 		}
 	}
 
 	if place == nil {
-		writeError(w, http.StatusNotFound, fmt.Sprintf("Place not found for ID: %s", id))
+		writeError(w, http.StatusNotFound, ErrNotFound, fmt.Sprintf("Place not found for ID: %s", id))
 		return
 	}
 
@@ -60,19 +60,19 @@ func (h *Handler) GetPlaceByWikidataID(w http.ResponseWriter, r *http.Request) {
 	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
 	qid := strings.ToUpper(strings.TrimSpace(chi.URLParam(r, "qid")))
 	if qid == "" {
-		writeError(w, http.StatusBadRequest, "Missing Wikidata QID")
+		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing Wikidata QID")
 		return
 	}
 
 	filter := fmt.Sprintf(`wikidata_id = "%s"`, qid)
 	place, err := h.meili.FindOneByFilter(r.Context(), filter)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Error retrieving place by Wikidata ID: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Error retrieving place by Wikidata ID: "+err.Error())
 		return
 	}
 
 	if place == nil {
-		writeError(w, http.StatusNotFound, fmt.Sprintf("Place not found for Wikidata ID: %s", qid))
+		writeError(w, http.StatusNotFound, ErrNotFound, fmt.Sprintf("Place not found for Wikidata ID: %s", qid))
 		return
 	}
 

@@ -11,7 +11,7 @@ import (
 func (h *Handler) GetTaxonomy(w http.ResponseWriter, r *http.Request) {
 	tax, err := taxonomy.GetTaxonomy()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to load taxonomy: "+err.Error())
+		writeError(w, http.StatusInternalServerError, ErrInternalError, "Failed to load taxonomy: "+err.Error())
 		return
 	}
 	writeJSON(w, http.StatusOK, tax)
@@ -29,7 +29,7 @@ func (h *Handler) GetLanguages(w http.ResponseWriter, r *http.Request) {
 
 	langs, err := taxonomy.GetLanguages()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to load languages: "+err.Error())
+		writeError(w, http.StatusInternalServerError, ErrInternalError, "Failed to load languages: "+err.Error())
 		return
 	}
 	writeJSON(w, http.StatusOK, langs)
@@ -39,18 +39,18 @@ func (h *Handler) GetLanguages(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UpdateLanguages(w http.ResponseWriter, r *http.Request) {
 	var body any
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		writeError(w, http.StatusBadRequest, "Invalid JSON payload: "+err.Error())
+		writeError(w, http.StatusBadRequest, ErrInvalidBody, "Invalid JSON payload: "+err.Error())
 		return
 	}
 
 	if h.importer == nil {
-		writeError(w, http.StatusServiceUnavailable, "Harvester service client not configured")
+		writeError(w, http.StatusServiceUnavailable, ErrUpstreamUnavailable, "Harvester service client not configured")
 		return
 	}
 
 	res, err := h.importer.UpdateLanguages(r.Context(), body)
 	if err != nil {
-		writeError(w, http.StatusBadGateway, "Failed to update languages: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to update languages: "+err.Error())
 		return
 	}
 

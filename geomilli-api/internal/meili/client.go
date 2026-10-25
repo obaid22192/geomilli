@@ -70,13 +70,13 @@ type SearchResponse struct {
 
 // PlacesSearchResult holds typed Place objects.
 type PlacesSearchResult struct {
-	Hits               []schema.Place            `json:"hits"`
-	Query              string                    `json:"query"`
-	ProcessingTimeMs   int64                     `json:"processing_time_ms"`
-	Limit              int                       `json:"limit"`
-	Offset             int                       `json:"offset"`
-	TotalHits          int64                     `json:"total_hits"`
-	FacetDistribution  map[string]map[string]int `json:"facet_distribution,omitempty"`
+	Hits              []schema.Place            `json:"hits"`
+	Query             string                    `json:"query"`
+	ProcessingTimeMs  int64                     `json:"processing_time_ms"`
+	Limit             int                       `json:"limit"`
+	Offset            int                       `json:"offset"`
+	TotalHits         int64                     `json:"total_hits"`
+	FacetDistribution map[string]map[string]int `json:"facet_distribution,omitempty"`
 }
 
 // IndexStats models Meilisearch index stats.

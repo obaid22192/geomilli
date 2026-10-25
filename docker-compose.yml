@@ -91,6 +91,27 @@ services:
       - PORT=3000
       - VITE_API_URL=http://localhost:8080
 
+  geomilli-mcp:
+    build:
+      context: ./geomilli-mcp
+      dockerfile: Dockerfile
+    container_name: geomilli-mcp
+    restart: unless-stopped
+    profiles:
+      - mcp
+    ports:
+      - "${MCP_PORT:-8090}:8090"
+    depends_on:
+      geomilli-api:
+        condition: service_started
+    environment:
+      - GEOMILLI_API_URL=http://geomilli-api:8080
+      - MCP_TRANSPORT=http
+      - MCP_HTTP_ADDR=0.0.0.0:8090
+      - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN:-dev-mcp-token}
+      - MCP_ALLOWED_ORIGINS=${MCP_ALLOWED_ORIGINS:-}
+      - MCP_ENABLE_OPS_TOOLS=${MCP_ENABLE_OPS_TOOLS:-false}
+
 volumes:
   meili_data:
     name: geomilli_meili_data

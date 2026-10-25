@@ -54,18 +54,18 @@ func (h *Handler) ImporterQueue(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ImporterCreateJob(w http.ResponseWriter, r *http.Request) {
 	var jobReq importer.CreateJobRequest
 	if err := json.NewDecoder(r.Body).Decode(&jobReq); err != nil {
-		writeError(w, http.StatusBadRequest, "Invalid JSON payload: "+err.Error())
+		writeError(w, http.StatusBadRequest, ErrInvalidBody, "Invalid JSON payload: "+err.Error())
 		return
 	}
 
 	if len(jobReq.Countries) == 0 {
-		writeError(w, http.StatusBadRequest, "Must specify at least one country in 'countries' array")
+		writeError(w, http.StatusBadRequest, ErrInvalidParameter, "Must specify at least one country in 'countries' array")
 		return
 	}
 
 	res, err := h.importer.CreateJob(r.Context(), jobReq)
 	if err != nil {
-		writeError(w, http.StatusBadGateway, "Failed to start harvester job: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to start harvester job: "+err.Error())
 		return
 	}
 
@@ -75,7 +75,7 @@ func (h *Handler) ImporterCreateJob(w http.ResponseWriter, r *http.Request) {
 // ImporterClearQueue clears all pending countries from the harvester queue.
 func (h *Handler) ImporterClearQueue(w http.ResponseWriter, r *http.Request) {
 	if err := h.importer.ClearQueue(r.Context()); err != nil {
-		writeError(w, http.StatusBadGateway, "Failed to clear queue: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to clear queue: "+err.Error())
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
@@ -105,13 +105,13 @@ func (h *Handler) ImporterDequeue(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if country == "" {
-		writeError(w, http.StatusBadRequest, "Missing 'country' parameter")
+		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing 'country' parameter")
 		return
 	}
 
 	res, err := h.importer.Dequeue(r.Context(), country)
 	if err != nil {
-		writeError(w, http.StatusBadGateway, "Failed to dequeue: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to dequeue: "+err.Error())
 		return
 	}
 	writeJSON(w, http.StatusOK, res)
@@ -139,7 +139,7 @@ func (h *Handler) ImporterCancel(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.importer.Cancel(r.Context(), cancelReq)
 	if err != nil {
-		writeError(w, http.StatusBadGateway, "Failed to cancel job: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to cancel job: "+err.Error())
 		return
 	}
 	writeJSON(w, http.StatusOK, res)

@@ -12,13 +12,13 @@ The autocomplete endpoint is optimized for sub-10ms latency as the user types. I
 
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `q` | `string` | **Yes** | Search prefix (e.g. `bru`, `amster`, `eiffel`). |
-| `lang` | `string` | No | Language code (`en`, `fr`, `nl`, `de`). Resolves localized names and highlights. |
+| `q` | `string` | No | Search prefix (e.g. `bru`, `amster`, `eiffel`). |
+| `lang` | `string` | No | ISO 639-1 language code (`en`, `fr`, `nl`, `de`). Resolves localized names and highlights. |
 | `country` | `string` | No | Filter by ISO 3166-1 alpha-2 country code (`BE`, `FR`, `DE`). |
 | `class` | `string` | No | Restrict to taxonomy class (`City`, `Airport`, `Hotel`, `Restaurant`). |
 | `subclass` | `string` | No | Filter by specific subclass (`museum`, `international`, `hostel`). |
 | `lat`, `lng` | `float` | No | Coordinates for geo-proximity distance ranking. |
-| `limit` | `int` | No | Number of hits to return (default: `10`, max: `50`). |
+| `limit` | `int` | No | Number of hits to return (default: `10`, max: `100`). |
 
 ### Example Request
 
@@ -33,13 +33,23 @@ curl -G "http://localhost:8080/v1/autocomplete" \
 
 ```json
 {
-  "hits": [
+  "query": "Brux",
+  "lang": "fr",
+  "took_ms": 2,
+  "total_hits": 1,
+  "results": [
     {
       "id": "relation_54094",
-      "name": "Bruxelles",
+      "entity_id": "relation_54094",
       "class": "City",
       "subclass": "city",
+      "name_display": "Bruxelles",
       "country_code": "BE",
+      "country_name": "Belgium",
+      "admin_hierarchy": [
+        "Brussels Hoofdstedelijk Gewest",
+        "Belgium"
+      ],
       "names_by_language": {
         "en": "Brussels",
         "fr": "Bruxelles",
@@ -50,15 +60,9 @@ curl -G "http://localhost:8080/v1/autocomplete" \
         "lat": 50.8466,
         "lng": 4.3528
       },
-      "popularity_score": 98.4,
-      "_formatted": {
-        "name": "<em>Brux</em>elles"
-      }
+      "popularity_score": 98.4
     }
-  ],
-  "processingTimeMs": 2,
-  "query": "Brux",
-  "limit": 10
+  ]
 }
 ```
 
@@ -73,9 +77,15 @@ The search endpoint allows complex boolean filtering, multi-attribute facet coun
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `q` | `string` | No | Full-text query string. If omitted, matches all documents matching filters. |
-| `facets` | `string` | No | Comma-separated list of facet fields (e.g., `class,subclass,country_code,cuisine`). |
+| `lang` | `string` | No | ISO 639-1 language code for localized name display. |
+| `facets` | `string` | No | Comma-separated list of facet fields (e.g. `class,subclass,country_code,cuisine`) or `*`. |
 | `filter` | `string` | No | Meilisearch filter expression (e.g. `country_code = 'BE' AND star_rating >= 4`). |
 | `sort` | `string` | No | Sorting rule (`popularity_score:desc`, `_geoPoint(lat,lng):asc`). |
+| `class` | `string` | No | Filter by taxonomy class (`Hotel`, `Restaurant`, etc.). |
+| `subclass` | `string` | No | Filter by specific subclass. |
+| `country` | `string` | No | Filter by ISO 3166-1 alpha-2 country code (`BE`, `NL`, `FR`). |
+| `cuisine` | `string` | No | Filter restaurants by cuisine type (e.g. `belgian`, `italian`). |
+| `star_rating` | `int` | No | Filter hotels by minimum star rating (`1` to `5`). |
 | `offset` | `int` | No | Pagination offset (default: `0`). |
 | `limit` | `int` | No | Page size (default: `20`, max: `100`). |
 
@@ -95,22 +105,12 @@ curl -G "http://localhost:8080/v1/search" \
 
 ```json
 {
-  "hits": [
-    {
-      "id": "way_10293847",
-      "name": "Hotel Amigo",
-      "class": "Hotel",
-      "subclass": "hotel",
-      "country_code": "BE",
-      "star_rating": 5,
-      "_geo": {
-        "lat": 50.8462,
-        "lng": 4.3519
-      },
-      "popularity_score": 88.5
-    }
-  ],
-  "facetDistribution": {
+  "query": "hotel",
+  "took_ms": 4,
+  "limit": 20,
+  "offset": 0,
+  "total_hits": 342,
+  "facets": {
     "class": {
       "Hotel": 342
     },
@@ -119,8 +119,22 @@ curl -G "http://localhost:8080/v1/search" \
       "5": 62
     }
   },
-  "totalHits": 342,
-  "processingTimeMs": 4,
-  "query": "hotel"
+  "results": [
+    {
+      "id": "way_10293847",
+      "entity_id": "way_10293847",
+      "class": "Hotel",
+      "subclass": "hotel",
+      "name_display": "Hotel Amigo",
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "star_rating": 5,
+      "_geo": {
+        "lat": 50.8462,
+        "lng": 4.3519
+      },
+      "popularity_score": 88.5
+    }
+  ]
 }
 ```

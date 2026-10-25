@@ -166,10 +166,15 @@ export const PlaygroundTab: React.FC = () => {
         setTotalHits(0);
         setDurationMs(undefined);
         setMeiliDurationMs(undefined);
-        setRawResponse({
-          error: true,
-          message: err.message || 'Request failed',
-        });
+        setRawResponse(
+          err.rawResponse || {
+            error: {
+              code: err.code || 'internal_error',
+              message: err.message || 'Request failed',
+              status: err.status || 500,
+            },
+          }
+        );
       } finally {
         setLoading(false);
       }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/geomilli/geomilli-api/internal/meili"
@@ -51,7 +50,7 @@ func (h *Handler) ListCountries(w http.ResponseWriter, r *http.Request) {
 	}
 	facetRes, err := h.meili.Search(r.Context(), facetReq)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to query countries: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to query countries: "+err.Error())
 		return
 	}
 
@@ -110,7 +109,7 @@ func (h *Handler) ListCountries(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ListCountryRegions(w http.ResponseWriter, r *http.Request) {
 	code := strings.ToUpper(strings.TrimSpace(chi.URLParam(r, "code")))
 	if code == "" {
-		writeError(w, http.StatusBadRequest, "Missing country code")
+		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing country code")
 		return
 	}
 
@@ -121,7 +120,7 @@ func (h *Handler) ListCountryRegions(w http.ResponseWriter, r *http.Request) {
 		Limit:  100,
 	})
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to query regions: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to query regions: "+err.Error())
 		return
 	}
 
@@ -138,26 +137,12 @@ func (h *Handler) ListCountryRegions(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ListCountryCities(w http.ResponseWriter, r *http.Request) {
 	code := strings.ToUpper(strings.TrimSpace(chi.URLParam(r, "code")))
 	if code == "" {
-		writeError(w, http.StatusBadRequest, "Missing country code")
+		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing country code")
 		return
 	}
 
-	limit := 50
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if val, err := strconv.Atoi(l); err == nil && val > 0 {
-			if val > 200 {
-				val = 200
-			}
-			limit = val
-		}
-	}
-
-	offset := 0
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if val, err := strconv.Atoi(o); err == nil && val >= 0 {
-			offset = val
-		}
-	}
+	limit := parseLimit(r, DefaultCitiesLimit, MaxCitiesLimit)
+	offset := parseOffset(r)
 
 	filter := fmt.Sprintf(`class = "City" AND country_code = "%s"`, code)
 	res, err := h.meili.SearchPlaces(r.Context(), meili.SearchRequest{
@@ -167,7 +152,7 @@ func (h *Handler) ListCountryCities(w http.ResponseWriter, r *http.Request) {
 		Offset: offset,
 	})
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to query cities: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Failed to query cities: "+err.Error())
 		return
 	}
 

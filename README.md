@@ -15,6 +15,7 @@
   <a href="#-what-is-geomilli">Overview</a> •
   <a href="#-core-feature-1-search--geospatial-rest-api">REST API</a> •
   <a href="#-core-feature-2-streaming-ingestion-engine">Harvester Engine</a> •
+  <a href="#-core-feature-3-model-context-protocol-mcp-server">MCP Server</a> •
   <a href="#-scalability--architectural-limitations">Scalability & Limits</a> •
   <a href="#-60-second-quickstart">Quickstart</a> •
   <a href="#-developer-console-geomilli-studio">Studio UI</a> •
@@ -27,9 +28,10 @@
 
 ## ⚡ What is Geomilli?
 
-**Geomilli** is an open-source geospatial platform consisting of two core engines:
+**Geomilli** is an open-source geospatial platform consisting of three core engines:
 1. **`geomilli-harvester`**: A streaming OpenStreetMap (OSM) ingestion daemon that downloads PBF data, extracts entities using Osmium, normalizes them into 19 canonical taxonomy classes, enriches records with Wikidata and Wikipedia pageviews, and indexes them into Meilisearch via zero-downtime blue/green shadow index swaps.
 2. **`geomilli-api`**: A high-throughput, low-latency Go REST API delivering sub-10ms prefix autocomplete, faceted search, reverse geocoding, bounding-box queries, and aviation lookups with typo tolerance and geo-proximity ranking.
+3. **`geomilli-mcp`**: A stateless Model Context Protocol (MCP) server exposing 16 geospatial tools, 5 context resources, and 3 workflow prompts to AI coding assistants and LLMs over `stdio` and Streamable HTTP.
 
 A lightweight developer console, **`geomilli-studio`**, is included for live map exploration, importer control, and telemetry monitoring.
 
@@ -43,6 +45,7 @@ The repository orchestrates decoupled, production-grade microservices:
 | :--- | :--- | :--- |
 | **[`geomilli-api`](./geomilli-api)** | High-throughput REST API serving autocomplete, search, reverse geocoding, airport lookups, and telemetry. | Go 1.25, Chi / stdlib, Meilisearch Go SDK |
 | **[`geomilli-harvester`](./geomilli-harvester)** | Streaming OpenStreetMap ingestion daemon, C++ Osmium filtering, Wikidata enricher, and Meilisearch indexer. | Go 1.25, `osmium-tool`, SQLite (WAL) |
+| **[`geomilli-mcp`](./geomilli-mcp)** | Model Context Protocol adapter exposing geospatial tools, resources, and prompts over stdio and Streamable HTTP (:8090). | Go 1.25, official `modelcontextprotocol/go-sdk` |
 | **[`geomilli-studio`](./geomilli-studio)** | Developer console, interactive MapLibre playground, live importer monitor, and telemetry charts. | React 19, TypeScript, Tailwind CSS, MapLibre GL |
 | **[`docs`](./docs)** | Full developer documentation site with client-rendered Mermaid diagrams. | VitePress, `vitepress-plugin-mermaid` |
 
@@ -159,6 +162,40 @@ curl -s "http://localhost:8080/v1/airports?country=BE&limit=25" | jq .
 
 ---
 
+## 🤖 Core Feature 3: Model Context Protocol (MCP) Server (`geomilli-mcp`)
+
+`geomilli-mcp` is a stateless adapter exposing Geomilli's search and OpenStreetMap intelligence to AI assistants, LLM coding tools, and agent runtimes over standard MCP transports.
+
+### Highlights
+- **16 Intent-Driven Tools**: Forward/reverse geocoding, proximity search (`find_nearby`), bounding-box queries (`places_in_area`), airport resolution (`find_airports`, `get_airport`), administrative navigation (`list_countries`, `list_regions`, `list_cities`), and great-circle calculation (`measure_distance`).
+- **5 Context Resources**: Inspect `geomilli://taxonomy`, `geomilli://languages`, `geomilli://countries`, `geomilli://schema/place`, and dynamic place URIs directly in LLM context.
+- **3 Workflow Prompts**: Reusable agent prompts for area exploration (`explore_area`), location descriptions (`describe_location`), and transit planning (`plan_airport_transfer`).
+- **Dual Transports**: Subprocess `stdio` with stderr-isolated logging, and Streamable HTTP (`:8090/mcp`) with constant-time Bearer authentication and Origin validation.
+
+### Connect an AI Agent (60 Seconds)
+
+Add Geomilli MCP to **Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "geomilli": {
+      "command": "/absolute/path/to/geomilli/geomilli-mcp/bin/geomilli-mcp",
+      "args": ["--api-url", "http://localhost:8080"]
+    }
+  }
+}
+```
+
+Or connect via **Claude Code (CLI)**:
+```bash
+claude mcp add geomilli -- /absolute/path/to/geomilli/geomilli-mcp/bin/geomilli-mcp --api-url http://localhost:8080
+```
+
+For Cursor, VS Code, Antigravity, and Docker setup, see the [MCP Client Setup Guide](docs/mcp/client-setup.md).
+
+---
+
 ## ⚖️ Scalability & Architectural Limitations
 
 Understanding the scaling boundaries of Geomilli components:
@@ -238,10 +275,13 @@ docker compose -f docker-compose.yml -f docker-compose.cloud.yml up -d --build
 | Command | Description |
 | :--- | :--- |
 | `make up` | Start all containers with Docker Compose (Meilisearch + Harvester + API + Studio) |
+| `make up-mcp` | Start all containers including the Model Context Protocol (`geomilli-mcp`) adapter |
 | `make down` | Stop all running containers |
 | `make logs` | Stream live logs from all services |
-| `make test` | Run test suites across Harvester, API, and documentation build |
+| `make test` | Run test suites across Harvester, API, MCP server, and documentation build |
 | `make build` | Compile all Go binaries and sync docs into Studio |
+| `make mcp` | Run `geomilli-mcp` locally in `stdio` transport mode |
+| `make mcp-inspect` | Launch MCP Inspector against local `geomilli-mcp` |
 | `make docs-build` | Build static VitePress documentation and sync to `geomilli-studio/public/docs/` |
 | `make docs` | Start local live-reload VitePress docs dev server |
 | `make up-cloud` | Start stack connected to external Meilisearch Cloud |
@@ -265,6 +305,11 @@ Topics covered:
 - [Taxonomy & Languages](docs/harvester/taxonomy-and-languages.md)
 - [Enrichment & SQLite WAL Caching](docs/harvester/enrichment-and-caching.md)
 - [REST API Reference & OpenAPI 3.1](docs/api/overview.md)
+- [MCP Server Architecture & Overview](docs/mcp/overview.md)
+- [MCP Client Setup Guide](docs/mcp/client-setup.md)
+- [MCP Tools Reference](docs/mcp/tools-reference.md)
+- [MCP Context Resources & Prompts](docs/mcp/resources-and-prompts.md)
+- [MCP Security & Deployment](docs/mcp/security-and-deployment.md)
 - [Geomilli Studio Guide](docs/studio/playground-and-metrics.md)
 
 ---

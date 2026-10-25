@@ -16,6 +16,7 @@ import (
 	"github.com/geomilli/geomilli-api/internal/importer"
 	"github.com/geomilli/geomilli-api/internal/meili"
 	"github.com/geomilli/geomilli-api/internal/metrics"
+	"github.com/geomilli/geomilli-api/internal/version"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -23,7 +24,8 @@ func main() {
 	cfg := config.Load()
 
 	log.Printf("==================================================")
-	log.Printf(" Starting Geomilli API Server")
+	log.Printf(" Starting Geomilli API Server (version %s)", version.Version)
+	log.Printf(" Version:       %s", version.Version)
 	log.Printf(" Port:          %s", cfg.Port)
 	log.Printf(" Meili Host:    %s", cfg.MeiliHost)
 	log.Printf(" Meili Mode:    %s", func() string {

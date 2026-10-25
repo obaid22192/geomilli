@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/geomilli/geomilli-api/internal/meili"
@@ -28,15 +27,7 @@ func (h *Handler) Autocomplete(w http.ResponseWriter, r *http.Request) {
 	class := strings.TrimSpace(r.URL.Query().Get("class"))
 	subclass := strings.TrimSpace(r.URL.Query().Get("subclass"))
 
-	limit := 10
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if val, err := strconv.Atoi(l); err == nil && val > 0 {
-			if val > 100 {
-				val = 100
-			}
-			limit = val
-		}
-	}
+	limit := parseLimit(r, DefaultAutocompleteLimit, MaxAutocompleteLimit)
 
 	var filters []string
 	if country != "" {
@@ -50,19 +41,9 @@ func (h *Handler) Autocomplete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sortRules []string
-	var userLat, userLng float64
-	hasGeo := false
-	latStr := r.URL.Query().Get("lat")
-	lngStr := r.URL.Query().Get("lng")
-	if latStr != "" && lngStr != "" {
-		lat, errLat := strconv.ParseFloat(latStr, 64)
-		lng, errLng := strconv.ParseFloat(lngStr, 64)
-		if errLat == nil && errLng == nil {
-			userLat = lat
-			userLng = lng
-			hasGeo = true
-			sortRules = append(sortRules, fmt.Sprintf("_geoPoint(%f, %f):asc", lat, lng))
-		}
+	userLat, userLng, hasGeo := parseOptionalLatLng(r)
+	if hasGeo {
+		sortRules = append(sortRules, fmt.Sprintf("_geoPoint(%f, %f):asc", userLat, userLng))
 	}
 	sortRules = append(sortRules, "popularity_score:desc")
 
@@ -81,7 +62,7 @@ func (h *Handler) Autocomplete(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.meili.SearchPlaces(r.Context(), searchReq)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Search error: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Search error: "+err.Error())
 		return
 	}
 

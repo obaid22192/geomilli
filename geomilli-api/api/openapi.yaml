@@ -1,0 +1,1994 @@
+openapi: 3.1.0
+info:
+  title: Geomilli API
+  summary: High-Performance OpenStreetMap Intelligence & Geospatial Search API
+  description: |
+    Geomilli exposes sub-10ms autocomplete, full-text faceted discovery, reverse geocoding,
+    geo-radius POI queries, bounding-box viewport streams, airport lookups, administrative
+    hierarchies, and ingestion management powered by Meilisearch.
+
+    Note: The Geomilli API currently operates without authentication. Protect it at the network edge
+    (reverse proxy, private network, or API gateway). Built-in Bearer authentication is planned.
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:8080
+    description: Local Docker Development Server
+  - url: https://api.geomilli.com
+    description: Production Cluster
+paths:
+  /:
+    get:
+      summary: Root Service Info
+      description: Returns service name, version, documentation URL, health URL, and Meilisearch engine mode.
+      operationId: getRootInfo
+      responses:
+        '200':
+          description: Service information and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RootInfoResponse'
+
+  /v1/autocomplete:
+    get:
+      summary: Keystroke Autocomplete
+      description: Returns sub-10ms prefix completions with language localization and geo-proximity scoring.
+      operationId: getAutocomplete
+      parameters:
+        - name: q
+          in: query
+          description: Search prefix query string
+          schema:
+            type: string
+          example: Brux
+        - name: lang
+          in: query
+          description: ISO 639-1 language code for name localization (e.g. en, fr, nl)
+          schema:
+            type: string
+          example: fr
+        - name: country
+          in: query
+          description: ISO 3166-1 alpha-2 country code filter (e.g. BE, FR, DE)
+          schema:
+            type: string
+          example: BE
+        - name: class
+          in: query
+          description: Taxonomy class filter (e.g. City, Airport, Hotel)
+          schema:
+            type: string
+          example: City
+        - name: subclass
+          in: query
+          description: Taxonomy subclass filter (e.g. museum, historic, international)
+          schema:
+            type: string
+        - name: lat
+          in: query
+          description: Latitude for proximity sorting (-90 to 90)
+          schema:
+            type: number
+            format: float
+          example: 50.8466
+        - name: lng
+          in: query
+          description: Longitude for proximity sorting (-180 to 180)
+          schema:
+            type: number
+            format: float
+          example: 4.3528
+        - name: limit
+          in: query
+          description: "Maximum results to return (default: 10, max: 100)"
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        '200':
+          description: Successful autocomplete match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutocompleteResponse'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/search:
+    get:
+      summary: Full-Text & Faceted Search
+      description: Rich discovery search supporting boolean filter expressions, facet distributions, and sorting.
+      operationId: searchPlaces
+      parameters:
+        - name: q
+          in: query
+          description: Full-text query string
+          schema:
+            type: string
+          example: hotel
+        - name: lang
+          in: query
+          description: Language code for name localization
+          schema:
+            type: string
+          example: en
+        - name: facets
+          in: query
+          description: Comma-separated list of facet fields or '*' for all default facets
+          schema:
+            type: string
+          example: class,subclass,country_code,star_rating
+        - name: filter
+          in: query
+          description: Meilisearch filter expression
+          schema:
+            type: string
+          example: "country_code = 'BE' AND star_rating >= 4"
+        - name: sort
+          in: query
+          description: Sorting rule (e.g. popularity_score:desc)
+          schema:
+            type: string
+          example: popularity_score:desc
+        - name: class
+          in: query
+          description: Taxonomy class filter
+          schema:
+            type: string
+        - name: subclass
+          in: query
+          description: Taxonomy subclass filter
+          schema:
+            type: string
+        - name: country
+          in: query
+          description: ISO 3166-1 alpha-2 country code
+          schema:
+            type: string
+        - name: cuisine
+          in: query
+          description: Cuisine filter for food venues
+          schema:
+            type: string
+        - name: star_rating
+          in: query
+          description: Minimum star rating filter (e.g. 4 for 4+ stars)
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: "Maximum results to return (default: 20, max: 100)"
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          description: "Pagination offset (default: 0)"
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Search results with facet distributions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/reverse:
+    get:
+      summary: Reverse Geocoding
+      description: Resolves lat/lng coordinates to administrative hierarchy, address components, and nearest places within search radius.
+      operationId: reverseGeocode
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          description: Latitude coordinate (-90 to 90)
+          schema:
+            type: number
+            format: float
+          example: 50.8467
+        - name: lng
+          in: query
+          required: true
+          description: Longitude coordinate (-180 to 180)
+          schema:
+            type: number
+            format: float
+          example: 4.3525
+        - name: radius_meters
+          in: query
+          description: "Search radius in meters (default: 50000, max: 100000). Accepts 'radius' as alias."
+          schema:
+            type: integer
+            default: 50000
+            maximum: 100000
+          example: 50000
+      responses:
+        '200':
+          description: Reverse geocoded address and enclosing hierarchy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReverseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/nearby:
+    get:
+      summary: Nearby POIs by Radius
+      description: Finds points of interest and places within a circular geographic radius.
+      operationId: nearbyPlaces
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          description: Center point latitude (-90 to 90)
+          schema:
+            type: number
+            format: float
+          example: 50.8467
+        - name: lng
+          in: query
+          required: true
+          description: Center point longitude (-180 to 180)
+          schema:
+            type: number
+            format: float
+          example: 4.3525
+        - name: radius_meters
+          in: query
+          description: "Search radius in meters (default: 5000, max: 100000). Accepts 'radius' as alias."
+          schema:
+            type: integer
+            default: 5000
+            maximum: 100000
+          example: 5000
+        - name: class
+          in: query
+          description: Taxonomy class filter (e.g. Restaurant, Hotel, TouristAttraction)
+          schema:
+            type: string
+          example: Restaurant
+        - name: subclass
+          in: query
+          description: Taxonomy subclass filter (e.g. museum, bakery)
+          schema:
+            type: string
+        - name: cuisine
+          in: query
+          description: Restaurant cuisine filter (e.g. belgian, italian)
+          schema:
+            type: string
+          example: belgian
+        - name: min_stars
+          in: query
+          description: Minimum star rating (1 to 5)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+        - name: limit
+          in: query
+          description: "Maximum results to return (default: 20, max: 100)"
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          description: "Pagination offset (default: 0)"
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: lang
+          in: query
+          description: Language code for name localization
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nearby places sorted by distance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NearbyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/bbox:
+    get:
+      summary: Map Viewport Bounding Box
+      description: Queries places inside a geographic bounding box viewport for map rendering.
+      operationId: bboxPlaces
+      parameters:
+        - name: min_lat
+          in: query
+          required: true
+          description: Southwest latitude (-90 to 90)
+          schema:
+            type: number
+            format: float
+          example: 50.8400
+        - name: min_lng
+          in: query
+          required: true
+          description: Southwest longitude (-180 to 180)
+          schema:
+            type: number
+            format: float
+          example: 4.3400
+        - name: max_lat
+          in: query
+          required: true
+          description: Northeast latitude (-90 to 90)
+          schema:
+            type: number
+            format: float
+          example: 50.8600
+        - name: max_lng
+          in: query
+          required: true
+          description: Northeast longitude (-180 to 180)
+          schema:
+            type: number
+            format: float
+          example: 4.3700
+        - name: class
+          in: query
+          description: Taxonomy class filter
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: "Maximum places to return (default: 100, max: 500)"
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+        - name: lang
+          in: query
+          description: Language code for name localization
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Places inside bounding box
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BBoxResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/places/{id}:
+    get:
+      summary: Place Details by ID
+      description: Retrieves a place entity by its Meilisearch ID or OSM entity ID, with optional nearby POIs.
+      operationId: getPlaceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Place document ID (e.g. relation_54094, node:123)
+          schema:
+            type: string
+          example: relation_54094
+        - name: lang
+          in: query
+          description: Language code for name localization
+          schema:
+            type: string
+        - name: include_nearby
+          in: query
+          description: "Include nearby POIs within 2km (default: false)"
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Place record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceDetailsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/places/wikidata/{qid}:
+    get:
+      summary: Place Details by Wikidata QID
+      description: Retrieves a place entity by its Wikidata identifier (e.g. Q31).
+      operationId: getPlaceByWikidata
+      parameters:
+        - name: qid
+          in: path
+          required: true
+          description: Wikidata item ID (e.g. Q31, Q239)
+          schema:
+            type: string
+          example: Q31
+        - name: lang
+          in: query
+          description: Language code for name localization
+          schema:
+            type: string
+        - name: include_nearby
+          in: query
+          description: "Include nearby POIs within 2km (default: false)"
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Place record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceDetailsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/airports:
+    get:
+      summary: Search and Filter Airports
+      description: Searches airports by query string, country code, IATA/ICAO code, or geo-proximity.
+      operationId: searchAirports
+      parameters:
+        - name: q
+          in: query
+          description: Airport name or keyword search
+          schema:
+            type: string
+        - name: country
+          in: query
+          description: Country ISO alpha-2 code filter
+          schema:
+            type: string
+          example: BE
+        - name: code
+          in: query
+          description: Exact match on either IATA or ICAO code
+          schema:
+            type: string
+          example: BRU
+        - name: iata
+          in: query
+          description: 3-letter IATA code
+          schema:
+            type: string
+          example: BRU
+        - name: icao
+          in: query
+          description: 4-letter ICAO code
+          schema:
+            type: string
+          example: EBBR
+        - name: lat
+          in: query
+          description: Latitude for proximity sorting
+          schema:
+            type: number
+            format: float
+        - name: lng
+          in: query
+          description: Longitude for proximity sorting
+          schema:
+            type: number
+            format: float
+        - name: limit
+          in: query
+          description: "Maximum airports to return (default: 20, max: 100)"
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: lang
+          in: query
+          description: Language code for name localization
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Airport search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportsResponse'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/airports/{code}:
+    get:
+      summary: Airport Lookup by Code
+      description: Resolves airport details by 3-letter IATA code or 4-letter ICAO code.
+      operationId: getAirportByCode
+      parameters:
+        - name: code
+          in: path
+          required: true
+          description: 3-letter IATA code or 4-letter ICAO code
+          schema:
+            type: string
+          example: BRU
+        - name: lang
+          in: query
+          description: Language code for name localization
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Airport details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Place'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/countries:
+    get:
+      summary: List Indexed Countries
+      description: Returns all countries indexed in Meilisearch with their place counts.
+      operationId: listCountries
+      responses:
+        '200':
+          description: List of indexed countries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountriesListResponse'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/countries/{code}/regions:
+    get:
+      summary: List Country Regions
+      description: Lists provinces and regions (admin level 4) for a specific country.
+      operationId: listCountryRegions
+      parameters:
+        - name: code
+          in: path
+          required: true
+          description: ISO 3166-1 alpha-2 country code
+          schema:
+            type: string
+          example: BE
+      responses:
+        '200':
+          description: Regions list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegionsListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/countries/{code}/cities:
+    get:
+      summary: List Country Cities
+      description: Lists cities and municipalities for a specific country, sorted by population.
+      operationId: listCountryCities
+      parameters:
+        - name: code
+          in: path
+          required: true
+          description: ISO 3166-1 alpha-2 country code
+          schema:
+            type: string
+          example: BE
+        - name: limit
+          in: query
+          description: "Max cities to return (default: 50, max: 200)"
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+        - name: offset
+          in: query
+          description: "Pagination offset (default: 0)"
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Cities list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitiesListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/taxonomy:
+    get:
+      summary: Taxonomy Schema & Matching Rules
+      description: Returns the 19 canonical taxonomy classes, tag matching rules, base scores, and attribute mappings.
+      operationId: getTaxonomy
+      responses:
+        '200':
+          description: Taxonomy configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxonomyConfig'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/languages:
+    get:
+      summary: Supported Languages
+      description: Returns supported multilingual translation codes and display names.
+      operationId: getLanguages
+      responses:
+        '200':
+          description: Whitelisted languages configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguagesConfig'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      summary: Update Languages Configuration
+      description: Updates enabled multilingual languages via Harvester daemon.
+      operationId: updateLanguages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Language configuration updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated:
+                    type: boolean
+                    example: true
+                  languages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LanguageItem'
+                  message:
+                    type: string
+                    example: Language configuration updated. Re-index countries to apply new language extractions.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/importer/status:
+    get:
+      summary: Harvester Daemon Status
+      description: Retrieves live state, resource utilization (heap, memory, disk cache), active job, and queue info from Harvester daemon.
+      operationId: getImporterStatus
+      responses:
+        '200':
+          description: Importer daemon status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HarvesterStatus'
+        '503':
+          description: Harvester service unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    example: offline
+                  error:
+                    type: string
+                  resources:
+                    $ref: '#/components/schemas/HarvesterResources'
+
+  /v1/importer/countries:
+    get:
+      summary: Available Countries Catalog
+      description: Retrieves Geofabrik country downloads catalog with indexing and scheduling status.
+      operationId: getImporterCountries
+      responses:
+        '200':
+          description: Countries catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountriesResponse'
+        '503':
+          description: Harvester service unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  countries:
+                    type: array
+                    items:
+                      type: object
+
+  /v1/importer/queue:
+    get:
+      summary: Importer Queue Status
+      description: Retrieves active worker slots and pending queued country tasks.
+      operationId: getImporterQueue
+      responses:
+        '200':
+          description: Importer queue status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueInfo'
+        '503':
+          description: Harvester service unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      summary: Clear Importer Queue
+      description: Clears all pending import tasks from the Harvester queue.
+      operationId: clearImporterQueue
+      responses:
+        '200':
+          description: Queue cleared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cleared:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: All pending queue tasks removed
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/importer/queue/dequeue:
+    post:
+      summary: Dequeue Country Task
+      description: Removes a specific pending country from the ingestion queue.
+      operationId: dequeueImporterCountry
+      parameters:
+        - name: country
+          in: query
+          description: Country code to dequeue
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                  example: BE
+                country_code:
+                  type: string
+                  example: BE
+      responses:
+        '200':
+          description: Dequeued task response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DequeueResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/importer/cancel:
+    post:
+      summary: Cancel Ingestion Job or Worker
+      description: Cancels an active ingestion worker slot or country job.
+      operationId: cancelImporterJob
+      parameters:
+        - name: country
+          in: query
+          description: Country code of the job to cancel
+          schema:
+            type: string
+        - name: worker_id
+          in: query
+          description: Worker slot ID to cancel
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelJobRequest'
+      responses:
+        '200':
+          description: Cancel result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelJobResponse'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/importer/jobs:
+    post:
+      summary: Create Ingestion Job
+      description: Triggers a new ingestion job for one or more countries.
+      operationId: createImporterJob
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '202':
+          description: Job accepted and queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateJobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/UpstreamUnavailable'
+
+  /v1/importer/events:
+    get:
+      summary: Importer SSE Progress Events
+      description: Server-Sent Events stream relaying real-time progress events from Harvester daemon.
+      operationId: getImporterEvents
+      responses:
+        '200':
+          description: Real-time SSE stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /v1/metrics:
+    get:
+      summary: System & Telemetry Metrics
+      description: Real-time ring-buffer telemetry (QPS, p50/p95/p99 latency, status codes, top queries, memory, Meilisearch stats).
+      operationId: getMetrics
+      responses:
+        '200':
+          description: Telemetry snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetrySnapshot'
+
+  /v1/health:
+    get:
+      summary: Service Health Check
+      description: Returns health status of API service and Meilisearch connection.
+      operationId: getHealth
+      responses:
+        '200':
+          description: System healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: System degraded or Meilisearch unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /v1/openapi.json:
+    get:
+      summary: OpenAPI 3.1 JSON Specification
+      description: Returns the dynamic OpenAPI 3.1 specification JSON with the active build version.
+      operationId: getOpenAPISpec
+      responses:
+        '200':
+          description: OpenAPI 3.1 JSON specification
+          content:
+            application/json:
+              schema:
+                type: object
+
+components:
+  schemas:
+    GeoPoint:
+      type: object
+      required:
+        - lat
+        - lng
+      properties:
+        lat:
+          type: number
+          format: float
+          example: 50.8466
+        lng:
+          type: number
+          format: float
+          example: 4.3528
+
+    Place:
+      type: object
+      required:
+        - id
+        - class
+        - name_display
+        - _geo
+        - popularity_score
+      properties:
+        id:
+          type: string
+          example: relation_54094
+        entity_id:
+          type: string
+          example: relation_54094
+        class:
+          type: string
+          example: City
+        subclass:
+          type: string
+          example: city
+        name_display:
+          type: string
+          example: Bruxelles - Brussel
+        names_by_language:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            en: Brussels
+            fr: Bruxelles
+            nl: Brussel
+        name_alt_active:
+          type: array
+          items:
+            type: string
+        name_alt_historical:
+          type: array
+          items:
+            type: string
+        country_code:
+          type: string
+          example: BE
+        country_name:
+          type: string
+          example: Belgium
+        admin_hierarchy:
+          type: array
+          items:
+            type: string
+          example: ["Brussels Hoofdstedelijk Gewest", "Belgium"]
+        parent_entity_id:
+          type: string
+        _geo:
+          $ref: '#/components/schemas/GeoPoint'
+        bbox:
+          type: array
+          items:
+            type: number
+            format: float
+          example: [4.3138, 50.7962, 4.4370, 50.9011]
+        iata_code:
+          type: string
+          example: BRU
+        icao_code:
+          type: string
+          example: EBBR
+        star_rating:
+          type: integer
+          example: 4
+        cuisine:
+          type: string
+          example: belgian
+        accommodation_type:
+          type: string
+          example: hotel
+        admin_level:
+          type: integer
+          example: 8
+        population:
+          type: integer
+          example: 1208542
+        wikidata_id:
+          type: string
+          example: Q239
+        popularity_score:
+          type: number
+          format: float
+          example: 98.4
+        source:
+          type: string
+          example: osm
+        updated_at:
+          type: string
+          example: "2026-10-24T00:00:00Z"
+        distance_meters:
+          type: number
+          format: float
+          example: 245.5
+
+    AutocompleteResponse:
+      type: object
+      required:
+        - query
+        - took_ms
+        - total_hits
+        - results
+      properties:
+        query:
+          type: string
+          example: Brux
+        lang:
+          type: string
+          example: fr
+        took_ms:
+          type: integer
+          example: 2
+        total_hits:
+          type: integer
+          example: 1
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    SearchResponse:
+      type: object
+      required:
+        - query
+        - took_ms
+        - limit
+        - offset
+        - total_hits
+        - results
+      properties:
+        query:
+          type: string
+          example: hotel
+        took_ms:
+          type: integer
+          example: 4
+        limit:
+          type: integer
+          example: 20
+        offset:
+          type: integer
+          example: 0
+        total_hits:
+          type: integer
+          example: 342
+        facets:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: integer
+          example:
+            class:
+              Hotel: 342
+            star_rating:
+              "4": 280
+              "5": 62
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    ReverseAddress:
+      type: object
+      properties:
+        landmark:
+          type: string
+          example: Grand Place
+        neighborhood:
+          type: string
+          example: Îlot Sacré
+        city:
+          type: string
+          example: Bruxelles - Brussel
+        region:
+          type: string
+          example: Brussels Hoofdstedelijk Gewest
+        country:
+          type: string
+          example: België / Belgique / Belgien
+        country_code:
+          type: string
+          example: BE
+
+    ReverseResponse:
+      type: object
+      required:
+        - lat
+        - lng
+        - radius_meters
+        - address
+        - admin_hierarchy
+        - nearest_places
+      properties:
+        lat:
+          type: number
+          format: float
+          example: 50.8467
+        lng:
+          type: number
+          format: float
+          example: 4.3525
+        radius_meters:
+          type: integer
+          example: 50000
+        address:
+          $ref: '#/components/schemas/ReverseAddress'
+        admin_hierarchy:
+          type: array
+          items:
+            type: string
+          example: ["Îlot Sacré", "Bruxelles - Brussel", "Brussels Hoofdstedelijk Gewest", "België / Belgique / Belgien"]
+        closest_place:
+          $ref: '#/components/schemas/Place'
+        nearest_places:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    NearbyResponse:
+      type: object
+      required:
+        - lat
+        - lng
+        - radius_meters
+        - took_ms
+        - limit
+        - offset
+        - total_hits
+        - results
+      properties:
+        lat:
+          type: number
+          format: float
+          example: 50.8467
+        lng:
+          type: number
+          format: float
+          example: 4.3525
+        radius_meters:
+          type: integer
+          example: 5000
+        took_ms:
+          type: integer
+          example: 3
+        limit:
+          type: integer
+          example: 20
+        offset:
+          type: integer
+          example: 0
+        total_hits:
+          type: integer
+          example: 45
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    BBoxResponse:
+      type: object
+      required:
+        - min_lat
+        - min_lng
+        - max_lat
+        - max_lng
+        - took_ms
+        - total_hits
+        - results
+      properties:
+        min_lat:
+          type: number
+          format: float
+          example: 50.8400
+        min_lng:
+          type: number
+          format: float
+          example: 4.3400
+        max_lat:
+          type: number
+          format: float
+          example: 50.8600
+        max_lng:
+          type: number
+          format: float
+          example: 4.3700
+        took_ms:
+          type: integer
+          example: 5
+        total_hits:
+          type: integer
+          example: 87
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    PlaceDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/Place'
+        - type: object
+          properties:
+            nearby_places:
+              type: array
+              items:
+                $ref: '#/components/schemas/Place'
+
+    AirportsResponse:
+      type: object
+      required:
+        - took_ms
+        - total_hits
+        - results
+      properties:
+        query:
+          type: string
+          example: Charleroi
+        took_ms:
+          type: integer
+          example: 2
+        total_hits:
+          type: integer
+          example: 1
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    CountrySummary:
+      type: object
+      required:
+        - country_code
+        - country_name
+        - place_count
+      properties:
+        country_code:
+          type: string
+          example: BE
+        country_name:
+          type: string
+          example: Belgium
+        place_count:
+          type: integer
+          example: 184520
+
+    CountriesListResponse:
+      type: object
+      required:
+        - total_countries
+        - countries
+      properties:
+        total_countries:
+          type: integer
+          example: 1
+        countries:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountrySummary'
+
+    RegionsListResponse:
+      type: object
+      required:
+        - country_code
+        - total_hits
+        - regions
+      properties:
+        country_code:
+          type: string
+          example: BE
+        total_hits:
+          type: integer
+          example: 3
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    CitiesListResponse:
+      type: object
+      required:
+        - country_code
+        - limit
+        - offset
+        - total_hits
+        - cities
+      properties:
+        country_code:
+          type: string
+          example: BE
+        limit:
+          type: integer
+          example: 50
+        offset:
+          type: integer
+          example: 0
+        total_hits:
+          type: integer
+          example: 581
+        cities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Place'
+
+    AttributeDefinition:
+      type: object
+      required:
+        - tag
+        - field
+      properties:
+        tag:
+          type: string
+          example: stars
+        field:
+          type: string
+          example: star_rating
+        transform:
+          type: string
+          example: to_int
+
+    MatchRule:
+      type: object
+      required:
+        - key
+        - values
+      properties:
+        key:
+          type: string
+          example: tourism
+        values:
+          type: array
+          items:
+            type: string
+          example: ["hotel", "motel"]
+        require_any_tag:
+          type: array
+          items:
+            type: string
+        geometry:
+          type: array
+          items:
+            type: string
+          example: ["point", "polygon"]
+
+    ClassDefinition:
+      type: object
+      required:
+        - name
+        - base_score
+        - layer
+        - match
+      properties:
+        name:
+          type: string
+          example: Hotel
+        base_score:
+          type: number
+          example: 60
+        layer:
+          type: string
+          example: poi
+        match:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchRule'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeDefinition'
+
+    TaxonomyConfig:
+      type: object
+      required:
+        - version
+        - classes
+      properties:
+        version:
+          type: integer
+          example: 1
+        classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassDefinition'
+
+    LanguageItem:
+      type: object
+      required:
+        - code
+        - name
+        - enabled
+      properties:
+        code:
+          type: string
+          example: en
+        name:
+          type: string
+          example: English
+        enabled:
+          type: boolean
+          example: true
+
+    LanguagesConfig:
+      type: object
+      required:
+        - version
+        - languages
+      properties:
+        version:
+          type: integer
+          example: 1
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/LanguageItem'
+
+    ActiveJob:
+      type: object
+      required:
+        - job_id
+        - countries
+        - current_country
+        - stage
+        - progress_pct
+        - docs_processed
+        - started_at
+      properties:
+        job_id:
+          type: string
+          example: job_20261024_01
+        countries:
+          type: array
+          items:
+            type: string
+          example: ["BE"]
+        current_country:
+          type: string
+          example: BE
+        stage:
+          type: string
+          example: indexing
+        progress_pct:
+          type: integer
+          example: 75
+        docs_processed:
+          type: integer
+          example: 150000
+        started_at:
+          type: string
+          example: "2026-10-24T12:00:00Z"
+
+    HarvesterResources:
+      type: object
+      properties:
+        heap_alloc_mb:
+          type: number
+          example: 320.5
+        sys_mem_mb:
+          type: number
+          example: 512.0
+        disk_staging_mb:
+          type: number
+          example: 1200.0
+        disk_cache_mb:
+          type: number
+          example: 450.0
+        sqlite_cache_entries:
+          type: integer
+          example: 95000
+
+    WorkerSlot:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        country_code:
+          type: string
+          example: BE
+        country_name:
+          type: string
+          example: Belgium
+        stage:
+          type: string
+          example: enriching
+        progress_pct:
+          type: integer
+          example: 42
+        docs_processed:
+          type: integer
+          example: 84000
+        started_at:
+          type: string
+          example: "2026-10-24T12:00:00Z"
+        status:
+          type: string
+          example: active
+
+    QueuedTask:
+      type: object
+      properties:
+        id:
+          type: string
+          example: task_01
+        country_code:
+          type: string
+          example: LU
+        country_name:
+          type: string
+          example: Luxembourg
+        online_enrich:
+          type: boolean
+          example: true
+        mode:
+          type: string
+          example: append
+        enqueued_at:
+          type: string
+          example: "2026-10-24T12:05:00Z"
+        status:
+          type: string
+          example: queued
+        error:
+          type: string
+
+    QueueInfo:
+      type: object
+      properties:
+        concurrency:
+          type: integer
+          example: 2
+        active_workers:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerSlot'
+        queued_tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueuedTask'
+        country_locks:
+          type: object
+          additionalProperties:
+            type: string
+
+    HarvesterStatus:
+      type: object
+      required:
+        - state
+        - resources
+      properties:
+        state:
+          type: string
+          enum: ["idle", "running", "completed", "failed", "offline"]
+          example: idle
+        active_job:
+          $ref: '#/components/schemas/ActiveJob'
+        resources:
+          $ref: '#/components/schemas/HarvesterResources'
+        history:
+          type: array
+          items:
+            type: object
+        queue:
+          $ref: '#/components/schemas/QueueInfo'
+
+    CountryItem:
+      type: object
+      required:
+        - code
+        - name
+        - continent
+        - geofabrik_path
+        - is_indexed
+      properties:
+        code:
+          type: string
+          example: BE
+        name:
+          type: string
+          example: Belgium
+        continent:
+          type: string
+          example: europe
+        geofabrik_path:
+          type: string
+          example: europe/belgium-latest.osm.pbf
+        is_indexed:
+          type: boolean
+          example: true
+        last_built_at:
+          type: string
+          example: "2026-10-23T18:00:00Z"
+        next_run_at:
+          type: string
+        sync_interval_hours:
+          type: integer
+          example: 24
+        schedule_status:
+          type: string
+          example: active
+        doc_count:
+          type: integer
+          example: 184520
+        size_mb:
+          type: number
+          example: 450.2
+
+    CountriesResponse:
+      type: object
+      required:
+        - countries
+      properties:
+        countries:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryItem'
+
+    CreateJobRequest:
+      type: object
+      required:
+        - countries
+      properties:
+        countries:
+          type: array
+          items:
+            type: string
+          example: ["BE", "LU"]
+        online_enrich:
+          type: boolean
+          default: true
+          example: true
+        mode:
+          type: string
+          enum: ["append", "replace"]
+          default: append
+          example: append
+
+    CreateJobResponse:
+      type: object
+      required:
+        - job_id
+        - status
+      properties:
+        job_id:
+          type: string
+          example: job_20261024_02
+        status:
+          type: string
+          example: queued
+        message:
+          type: string
+          example: Ingestion job accepted
+        enqueued:
+          type: array
+          items:
+            type: string
+          example: ["BE", "LU"]
+
+    CancelJobRequest:
+      type: object
+      properties:
+        worker_id:
+          type: integer
+          example: 1
+        country_code:
+          type: string
+          example: BE
+
+    CancelJobResponse:
+      type: object
+      required:
+        - cancelled
+        - message
+      properties:
+        cancelled:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Worker slot cancelled
+
+    DequeueResponse:
+      type: object
+      required:
+        - dequeued
+        - message
+      properties:
+        dequeued:
+          type: boolean
+          example: true
+        country:
+          type: string
+          example: BE
+        message:
+          type: string
+          example: Country removed from queue
+
+    LatencyPercentiles:
+      type: object
+      properties:
+        p50:
+          type: number
+          example: 2.1
+        p95:
+          type: number
+          example: 6.8
+        p99:
+          type: number
+          example: 14.3
+
+    QueryCount:
+      type: object
+      required:
+        - query
+        - count
+      properties:
+        query:
+          type: string
+          example: brussels
+        count:
+          type: integer
+          example: 1420
+
+    MeiliInfo:
+      type: object
+      properties:
+        status:
+          type: string
+          example: available
+        mode:
+          type: string
+          example: local
+        base_url:
+          type: string
+          example: http://localhost:7700
+        latency_ms:
+          type: number
+          example: 1.2
+        index_docs:
+          type: integer
+          example: 184520
+        estimated_index_mb:
+          type: number
+          example: 184.52
+
+    SystemMemory:
+      type: object
+      properties:
+        heap_alloc_mb:
+          type: number
+          example: 42.5
+        sys_mem_mb:
+          type: number
+          example: 85.0
+        num_goroutines:
+          type: integer
+          example: 28
+
+    TelemetrySnapshot:
+      type: object
+      required:
+        - timestamp
+        - total_requests
+        - active_qps
+        - latency
+        - endpoint_breakdown
+        - status_codes
+        - top_queries
+        - zero_hit_queries
+        - meilisearch
+        - system
+      properties:
+        timestamp:
+          type: string
+          example: "2026-10-24T12:00:00Z"
+        total_requests:
+          type: integer
+          example: 849201
+        active_qps:
+          type: number
+          example: 142.5
+        latency:
+          $ref: '#/components/schemas/LatencyPercentiles'
+        endpoint_breakdown:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            /v1/autocomplete: 520100
+            /v1/search: 210000
+        status_codes:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            "200": 845000
+            "400": 3200
+            "404": 1001
+        top_queries:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryCount'
+        zero_hit_queries:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryCount'
+        meilisearch:
+          $ref: '#/components/schemas/MeiliInfo'
+        system:
+          $ref: '#/components/schemas/SystemMemory'
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - version
+        - timestamp
+        - meilisearch
+      properties:
+        status:
+          type: string
+          enum: ["healthy", "degraded"]
+          example: healthy
+        version:
+          type: string
+          example: 1.0.0
+        timestamp:
+          type: string
+          example: "2026-10-24T12:00:00Z"
+        meilisearch:
+          type: object
+          properties:
+            status:
+              type: string
+              example: available
+            mode:
+              type: string
+              example: local
+            base_url:
+              type: string
+              example: http://localhost:7700
+            latency_ms:
+              type: number
+              example: 1.2
+
+    RootInfoResponse:
+      type: object
+      required:
+        - name
+        - version
+        - docs
+        - health
+        - status
+        - meili_mode
+      properties:
+        name:
+          type: string
+          example: Geomilli API
+        version:
+          type: string
+          example: 1.0.0
+        docs:
+          type: string
+          example: /v1/openapi.json
+        health:
+          type: string
+          example: /v1/health
+        status:
+          type: string
+          example: online
+        meili_mode:
+          type: string
+          example: local
+
+    ErrorDetail:
+      type: object
+      required:
+        - code
+        - message
+        - status
+      properties:
+        code:
+          type: string
+          enum:
+            - missing_parameter
+            - invalid_parameter
+            - invalid_body
+            - not_found
+            - upstream_unavailable
+            - internal_error
+            - unauthorized
+          description: Machine-readable error code per RFC-001 §11.2
+          example: invalid_parameter
+        message:
+          type: string
+          description: Human-readable error description
+          example: Parameter 'lat' must be between -90 and 90
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+
+  responses:
+    BadRequest:
+      description: Invalid query parameters or missing required arguments
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Requested resource, place entity, or airport not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UpstreamUnavailable:
+      description: Upstream Meilisearch or Harvester service unreachable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

@@ -11,8 +11,10 @@ RUN go mod download
 
 COPY . .
 
+ARG VERSION=dev
+
 # Build static binary with stripped debug symbols
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /build/geomilli-api ./cmd/api
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w -X github.com/geomilli/geomilli-api/internal/version.Version=${VERSION}" -o /build/geomilli-api ./cmd/api
 
 FROM alpine:3.21
 

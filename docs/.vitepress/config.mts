@@ -1,5 +1,9 @@
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
+import fs from 'node:fs'
+import path from 'node:path'
+
+const version = fs.readFileSync(path.resolve(__dirname, '../../VERSION'), 'utf-8').trim()
 
 export default withMermaid(
   defineConfig({
@@ -21,10 +25,13 @@ export default withMermaid(
       { text: 'Guide', link: '/guide/quickstart' },
       { text: 'Harvester', link: '/harvester/configuration' },
       { text: 'API Reference', link: '/api/overview' },
+      { text: 'MCP Server', link: '/mcp/overview' },
       { text: 'Studio UI', link: '/studio/playground-and-metrics' },
+      { text: 'Changelog', link: '/changelog' },
       {
-        text: 'v1.0.0',
+        text: `v${version}`,
         items: [
+          { text: 'Changelog', link: '/changelog' },
           { text: 'GitHub Release', link: 'https://github.com/geomilli/geomilli/releases' },
           { text: 'OpenAPI 3.1 Spec', link: '/api/openapi.yaml' }
         ]
@@ -59,6 +66,18 @@ export default withMermaid(
             { text: 'API Overview & Auth', link: '/api/overview' },
             { text: 'Autocomplete & Search', link: '/api/autocomplete-and-search' },
             { text: 'Geospatial & POI APIs', link: '/api/geospatial-apis' }
+          ]
+        }
+      ],
+      '/mcp/': [
+        {
+          text: 'MCP Server',
+          items: [
+            { text: 'Architecture & Overview', link: '/mcp/overview' },
+            { text: 'Client Setup & Config', link: '/mcp/client-setup' },
+            { text: 'Tools Reference', link: '/mcp/tools-reference' },
+            { text: 'Resources & Prompts', link: '/mcp/resources-and-prompts' },
+            { text: 'Security & Deployment', link: '/mcp/security-and-deployment' }
           ]
         }
       ],

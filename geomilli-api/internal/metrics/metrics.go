@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	ringBufferSize   = 4096
-	slidingWindowSec = 60
+	ringBufferSize    = 4096
+	slidingWindowSec  = 60
 	maxTrackedQueries = 100
 )
 
@@ -18,11 +18,11 @@ const (
 type Collector struct {
 	mu sync.RWMutex
 
-	totalRequests   int64
-	endpointCounts  map[string]int64
-	statusCounts    map[int]int64
-	topQueries      map[string]int64
-	zeroHitQueries  map[string]int64
+	totalRequests  int64
+	endpointCounts map[string]int64
+	statusCounts   map[int]int64
+	topQueries     map[string]int64
+	zeroHitQueries map[string]int64
 
 	// Ring buffer for latency in milliseconds
 	latencies  [ringBufferSize]float64
@@ -124,12 +124,12 @@ type QueryCount struct {
 
 // MeiliInfo models Meilisearch status in metrics.
 type MeiliInfo struct {
-	Status        string  `json:"status"` // "healthy", "unreachable"
-	Mode          string  `json:"mode"`   // "local", "cloud"
-	BaseURL       string  `json:"base_url"`
-	LatencyMs     float64 `json:"latency_ms"`
-	IndexDocs     int64   `json:"index_docs"`
-	EstimatedMB   float64 `json:"estimated_index_mb"`
+	Status      string  `json:"status"` // "healthy", "unreachable"
+	Mode        string  `json:"mode"`   // "local", "cloud"
+	BaseURL     string  `json:"base_url"`
+	LatencyMs   float64 `json:"latency_ms"`
+	IndexDocs   int64   `json:"index_docs"`
+	EstimatedMB float64 `json:"estimated_index_mb"`
 }
 
 // SystemMemory models memory and runtime statistics.
@@ -141,16 +141,16 @@ type SystemMemory struct {
 
 // TelemetrySnapshot holds full telemetry report.
 type TelemetrySnapshot struct {
-	Timestamp          string             `json:"timestamp"`
-	TotalRequests      int64              `json:"total_requests"`
-	ActiveQPS          float64            `json:"active_qps"`
-	Latency            LatencyPercentiles `json:"latency"`
-	EndpointBreakdown  map[string]int64   `json:"endpoint_breakdown"`
-	StatusCodes        map[int]int64      `json:"status_codes"`
-	TopQueries         []QueryCount       `json:"top_queries"`
-	ZeroHitQueries     []QueryCount       `json:"zero_hit_queries"`
-	Meilisearch        MeiliInfo          `json:"meilisearch"`
-	System             SystemMemory       `json:"system"`
+	Timestamp         string             `json:"timestamp"`
+	TotalRequests     int64              `json:"total_requests"`
+	ActiveQPS         float64            `json:"active_qps"`
+	Latency           LatencyPercentiles `json:"latency"`
+	EndpointBreakdown map[string]int64   `json:"endpoint_breakdown"`
+	StatusCodes       map[int]int64      `json:"status_codes"`
+	TopQueries        []QueryCount       `json:"top_queries"`
+	ZeroHitQueries    []QueryCount       `json:"zero_hit_queries"`
+	Meilisearch       MeiliInfo          `json:"meilisearch"`
+	System            SystemMemory       `json:"system"`
 }
 
 // Snapshot generates the current telemetry report.

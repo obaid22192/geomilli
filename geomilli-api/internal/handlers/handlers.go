@@ -10,6 +10,7 @@ import (
 	"github.com/geomilli/geomilli-api/internal/metrics"
 	appMiddleware "github.com/geomilli/geomilli-api/internal/middleware"
 	"github.com/geomilli/geomilli-api/internal/schema"
+	"github.com/geomilli/geomilli-api/internal/version"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -45,12 +46,12 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	// Root redirect / info
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{
-			"name":        "Geomilli API",
-			"version":     "1.0.0",
-			"docs":        "/v1/openapi.json",
-			"health":      "/v1/health",
-			"status":      "online",
-			"meili_mode":  h.getMeiliMode(),
+			"name":       "Geomilli API",
+			"version":    version.Version,
+			"docs":       "/v1/openapi.json",
+			"health":     "/v1/health",
+			"status":     "online",
+			"meili_mode": h.getMeiliMode(),
 		})
 	})
 
@@ -117,15 +118,6 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(data)
-}
-
-// writeError serializes an error response.
-func writeError(w http.ResponseWriter, status int, message string) {
-	writeJSON(w, status, map[string]any{
-		"error":   true,
-		"status":  status,
-		"message": message,
-	})
 }
 
 // localizePlace replaces NameDisplay with language-specific name if available.

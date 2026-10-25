@@ -26,47 +26,19 @@ type NearbyResponse struct {
 // Nearby queries POIs and places within a geo-radius.
 func (h *Handler) Nearby(w http.ResponseWriter, r *http.Request) {
 	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
-	latStr := strings.TrimSpace(r.URL.Query().Get("lat"))
-	lngStr := strings.TrimSpace(r.URL.Query().Get("lng"))
-
-	if latStr == "" || lngStr == "" {
-		writeError(w, http.StatusBadRequest, "Both 'lat' and 'lng' query parameters are required")
+	lat, lng, err := parseLatLng(r)
+	if err != nil {
+		if pErr, ok := err.(*ParamError); ok {
+			writeError(w, http.StatusBadRequest, pErr.Code, pErr.Message)
+			return
+		}
+		writeError(w, http.StatusBadRequest, ErrInvalidParameter, err.Error())
 		return
 	}
 
-	lat, errLat := strconv.ParseFloat(latStr, 64)
-	lng, errLng := strconv.ParseFloat(lngStr, 64)
-	if errLat != nil || errLng != nil || lat < -90 || lat > 90 || lng < -180 || lng > 180 {
-		writeError(w, http.StatusBadRequest, "Invalid lat or lng coordinate values")
-		return
-	}
-
-	radius := 5000
-	if rStr := r.URL.Query().Get("radius_meters"); rStr != "" {
-		if val, err := strconv.Atoi(rStr); err == nil && val > 0 {
-			if val > 100000 {
-				val = 100000
-			}
-			radius = val
-		}
-	}
-
-	limit := 20
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if val, err := strconv.Atoi(l); err == nil && val > 0 {
-			if val > 100 {
-				val = 100
-			}
-			limit = val
-		}
-	}
-
-	offset := 0
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if val, err := strconv.Atoi(o); err == nil && val >= 0 {
-			offset = val
-		}
-	}
+	radius := parseRadius(r, DefaultNearbyRadius, MaxNearbyRadius)
+	limit := parseLimit(r, DefaultNearbyLimit, MaxNearbyLimit)
+	offset := parseOffset(r)
 
 	var filters []string
 	filters = append(filters, fmt.Sprintf("_geoRadius(%f, %f, %d)", lat, lng, radius))
@@ -100,7 +72,7 @@ func (h *Handler) Nearby(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.meili.SearchPlaces(r.Context(), searchReq)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Nearby query error: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Nearby query error: "+err.Error())
 		return
 	}
 

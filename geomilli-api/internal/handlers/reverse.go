@@ -3,8 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/geomilli/geomilli-api/internal/meili"
 	appMiddleware "github.com/geomilli/geomilli-api/internal/middleware"
@@ -25,6 +23,7 @@ type ReverseAddress struct {
 type ReverseResponse struct {
 	Lat            float64        `json:"lat"`
 	Lng            float64        `json:"lng"`
+	RadiusMeters   int            `json:"radius_meters"`
 	Address        ReverseAddress `json:"address"`
 	AdminHierarchy []string       `json:"admin_hierarchy"`
 	ClosestPlace   *schema.Place  `json:"closest_place,omitempty"`
@@ -33,27 +32,17 @@ type ReverseResponse struct {
 
 // Reverse resolves latitude and longitude coordinates to address and admin hierarchy.
 func (h *Handler) Reverse(w http.ResponseWriter, r *http.Request) {
-	latStr := strings.TrimSpace(r.URL.Query().Get("lat"))
-	lngStr := strings.TrimSpace(r.URL.Query().Get("lng"))
-
-	if latStr == "" || lngStr == "" {
-		writeError(w, http.StatusBadRequest, "Both 'lat' and 'lng' query parameters are required")
-		return
-	}
-
-	lat, errLat := strconv.ParseFloat(latStr, 64)
-	lng, errLng := strconv.ParseFloat(lngStr, 64)
-	if errLat != nil || errLng != nil || lat < -90 || lat > 90 || lng < -180 || lng > 180 {
-		writeError(w, http.StatusBadRequest, "Invalid lat or lng coordinate values")
-		return
-	}
-
-	radius := 50000 // 50km
-	if rStr := r.URL.Query().Get("radius_meters"); rStr != "" {
-		if val, err := strconv.Atoi(rStr); err == nil && val > 0 {
-			radius = val
+	lat, lng, err := parseLatLng(r)
+	if err != nil {
+		if pErr, ok := err.(*ParamError); ok {
+			writeError(w, http.StatusBadRequest, pErr.Code, pErr.Message)
+			return
 		}
+		writeError(w, http.StatusBadRequest, ErrInvalidParameter, err.Error())
+		return
 	}
+
+	radius := parseRadius(r, DefaultReverseRadius, MaxReverseRadius)
 
 	searchReq := meili.SearchRequest{
 		Filter: fmt.Sprintf("_geoRadius(%f, %f, %d)", lat, lng, radius),
@@ -63,7 +52,7 @@ func (h *Handler) Reverse(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.meili.SearchPlaces(r.Context(), searchReq)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Reverse geocode error: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Reverse geocode error: "+err.Error())
 		return
 	}
 
@@ -141,6 +130,7 @@ func (h *Handler) Reverse(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, ReverseResponse{
 		Lat:            lat,
 		Lng:            lng,
+		RadiusMeters:   radius,
 		Address:        addr,
 		AdminHierarchy: adminHierarchy,
 		ClosestPlace:   closest,

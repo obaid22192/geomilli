@@ -58,9 +58,9 @@ type LanguagesConfig struct {
 }
 
 var (
-	once sync.Once
-	tax  *TaxonomyConfig
-	lang *LanguagesConfig
+	once    sync.Once
+	tax     *TaxonomyConfig
+	lang    *LanguagesConfig
 	errInit error
 )
 

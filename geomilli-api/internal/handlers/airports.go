@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/geomilli/geomilli-api/internal/meili"
@@ -26,15 +25,7 @@ func (h *Handler) SearchAirports(w http.ResponseWriter, r *http.Request) {
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
 	country := strings.ToUpper(strings.TrimSpace(r.URL.Query().Get("country")))
 
-	limit := 20
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if val, err := strconv.Atoi(l); err == nil && val > 0 {
-			if val > 100 {
-				val = 100
-			}
-			limit = val
-		}
-	}
+	limit := parseLimit(r, DefaultAirportsLimit, MaxAirportsLimit)
 
 	filters := []string{`class = "Airport"`}
 	if country != "" {
@@ -51,19 +42,9 @@ func (h *Handler) SearchAirports(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sortRules []string
-	var userLat, userLng float64
-	hasGeo := false
-	latStr := r.URL.Query().Get("lat")
-	lngStr := r.URL.Query().Get("lng")
-	if latStr != "" && lngStr != "" {
-		lat, errLat := strconv.ParseFloat(latStr, 64)
-		lng, errLng := strconv.ParseFloat(lngStr, 64)
-		if errLat == nil && errLng == nil {
-			userLat = lat
-			userLng = lng
-			hasGeo = true
-			sortRules = append(sortRules, fmt.Sprintf("_geoPoint(%f, %f):asc", lat, lng))
-		}
+	userLat, userLng, hasGeo := parseOptionalLatLng(r)
+	if hasGeo {
+		sortRules = append(sortRules, fmt.Sprintf("_geoPoint(%f, %f):asc", userLat, userLng))
 	}
 	sortRules = append(sortRules, "popularity_score:desc")
 
@@ -77,7 +58,7 @@ func (h *Handler) SearchAirports(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.meili.SearchPlaces(r.Context(), searchReq)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Search airports error: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Search airports error: "+err.Error())
 		return
 	}
 
@@ -107,19 +88,19 @@ func (h *Handler) GetAirportByCode(w http.ResponseWriter, r *http.Request) {
 	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
 	code := strings.ToUpper(strings.TrimSpace(chi.URLParam(r, "code")))
 	if code == "" {
-		writeError(w, http.StatusBadRequest, "Missing airport code")
+		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing airport code")
 		return
 	}
 
 	filter := fmt.Sprintf(`class = "Airport" AND (iata_code = "%s" OR icao_code = "%s")`, code, code)
 	place, err := h.meili.FindOneByFilter(r.Context(), filter)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Error retrieving airport: "+err.Error())
+		writeError(w, http.StatusBadGateway, ErrUpstreamUnavailable, "Error retrieving airport: "+err.Error())
 		return
 	}
 
 	if place == nil {
-		writeError(w, http.StatusNotFound, fmt.Sprintf("Airport not found for code: %s", code))
+		writeError(w, http.StatusNotFound, ErrNotFound, fmt.Sprintf("Airport not found for code: %s", code))
 		return
 	}
 

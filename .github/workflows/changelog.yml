@@ -1,0 +1,74 @@
+name: Changelog Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+concurrency:
+  group: changelog-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-changelog:
+    name: Verify CHANGELOG.md update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check changelog update
+        run: |
+          # Check for skip-changelog label
+          if [ "${{ contains(github.event.pull_request.labels.*.name, 'skip-changelog') }}" = "true" ]; then
+            echo "PR has 'skip-changelog' label. Skipping changelog verification."
+            exit 0
+          fi
+
+          BASE_REF="origin/${{ github.base_ref }}"
+          echo "Comparing HEAD against base ref: ${BASE_REF}"
+
+          # Check if monitored code paths were modified
+          CODE_CHANGES=$(git diff --name-only "${BASE_REF}"...HEAD -- \
+            'geomilli-api/**' \
+            'geomilli-harvester/**' \
+            'geomilli-studio/**' \
+            'geomilli-mcp/**' \
+            'config/**')
+
+          if [ -z "${CODE_CHANGES}" ]; then
+            echo "No code changes detected in monitored paths. Changelog update not required."
+            exit 0
+          fi
+
+          echo "Detected code changes in:"
+          echo "${CODE_CHANGES}"
+
+          # Check if CHANGELOG.md was modified
+          CHANGELOG_CHANGED=$(git diff --name-only "${BASE_REF}"...HEAD -- CHANGELOG.md)
+
+          if [ -n "${CHANGELOG_CHANGED}" ]; then
+            echo "CHANGELOG.md has been updated. Check passed."
+            exit 0
+          fi
+
+          echo "::error::CHANGELOG.md was not updated, but code changes were detected in monitored paths."
+          echo ""
+          echo "================================================================================"
+          echo "CHANGELOG VERIFICATION FAILED"
+          echo "================================================================================"
+          echo "Every change affecting 'geomilli-api/', 'geomilli-harvester/', 'geomilli-studio/',"
+          echo "'geomilli-mcp/', or 'config/' must include an update to CHANGELOG.md under"
+          echo "the '## [Unreleased]' section with an appropriate component tag:"
+          echo "  - **api**: Search & Geo API changes"
+          echo "  - **mcp**: MCP server changes"
+          echo "  - **harvester**: Ingestion pipeline changes"
+          echo "  - **studio**: Web UI changes"
+          echo "  - **docs**: Documentation updates"
+          echo "  - **infra**: Infrastructure, tooling, or CI updates"
+          echo ""
+          echo "If this PR does not warrant a changelog entry, apply the 'skip-changelog' label"
+          echo "to the pull request to bypass this check."
+          echo "================================================================================"
+          exit 1
