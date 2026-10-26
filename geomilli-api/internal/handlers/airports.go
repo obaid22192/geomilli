@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/geomilli/geomilli-api/internal/countries"
 	"github.com/geomilli/geomilli-api/internal/meili"
 	appMiddleware "github.com/geomilli/geomilli-api/internal/middleware"
 	"github.com/geomilli/geomilli-api/internal/schema"
@@ -23,13 +24,41 @@ type AirportsResponse struct {
 func (h *Handler) SearchAirports(w http.ResponseWriter, r *http.Request) {
 	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
-	country := strings.ToUpper(strings.TrimSpace(r.URL.Query().Get("country")))
+	countryParam := strings.TrimSpace(r.URL.Query().Get("country"))
+
+	var countryCode string
+	if countryParam != "" {
+		if code, ok := countries.NormalizeCode(countryParam); ok {
+			countryCode = code
+		} else if len(countryParam) == 2 {
+			countryCode = strings.ToUpper(countryParam)
+		}
+	}
+
+	// Smart query extraction if country parameter was not explicitly provided
+	if countryCode == "" && q != "" {
+		// If q is exactly a country name or code (e.g. "belgium", "BE")
+		if code, ok := countries.NormalizeCode(q); ok {
+			countryCode = code
+			q = "" // Clear text query so all airports in the country match
+		} else if cleaned, code, found := countries.ExtractFromQuery(q); found {
+			countryCode = code
+			// If cleaned is "airports" or "airport", clear it because class="Airport" already filters for it
+			if strings.EqualFold(cleaned, "airports") || strings.EqualFold(cleaned, "airport") {
+				q = ""
+			} else {
+				q = cleaned
+			}
+		}
+	}
 
 	limit := parseLimit(r, DefaultAirportsLimit, MaxAirportsLimit)
 
 	filters := []string{`class = "Airport"`}
-	if country != "" {
-		filters = append(filters, fmt.Sprintf(`country_code = "%s"`, country))
+	if countryCode != "" {
+		filters = append(filters, fmt.Sprintf(`country_code = "%s"`, countryCode))
+	} else if countryParam != "" {
+		filters = append(filters, fmt.Sprintf(`(country_code = "%s" OR country_name = "%s")`, countryParam, countryParam))
 	}
 	if code := strings.ToUpper(strings.TrimSpace(r.URL.Query().Get("code"))); code != "" {
 		filters = append(filters, fmt.Sprintf(`(iata_code = "%s" OR icao_code = "%s")`, code, code))

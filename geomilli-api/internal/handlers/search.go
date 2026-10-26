@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/geomilli/geomilli-api/internal/countries"
 	"github.com/geomilli/geomilli-api/internal/meili"
 	appMiddleware "github.com/geomilli/geomilli-api/internal/middleware"
 	"github.com/geomilli/geomilli-api/internal/schema"
@@ -29,6 +30,24 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	filter := strings.TrimSpace(r.URL.Query().Get("filter"))
 	sortParam := strings.TrimSpace(r.URL.Query().Get("sort"))
 	facetsParam := strings.TrimSpace(r.URL.Query().Get("facets"))
+	countryParam := strings.TrimSpace(r.URL.Query().Get("country"))
+
+	var countryCode string
+	if countryParam != "" {
+		if code, ok := countries.NormalizeCode(countryParam); ok {
+			countryCode = code
+		} else if len(countryParam) == 2 {
+			countryCode = strings.ToUpper(countryParam)
+		}
+	}
+
+	// Smart query extraction if country parameter was not explicitly provided
+	if countryCode == "" && q != "" {
+		if cleaned, code, found := countries.ExtractFromQuery(q); found && cleaned != "" {
+			countryCode = code
+			q = cleaned
+		}
+	}
 
 	limit := parseLimit(r, DefaultSearchLimit, MaxSearchLimit)
 	offset := parseOffset(r)
@@ -69,8 +88,10 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	if subclass := strings.TrimSpace(r.URL.Query().Get("subclass")); subclass != "" {
 		filters = append(filters, fmt.Sprintf(`subclass = "%s"`, subclass))
 	}
-	if country := strings.ToUpper(strings.TrimSpace(r.URL.Query().Get("country"))); country != "" {
-		filters = append(filters, fmt.Sprintf(`country_code = "%s"`, country))
+	if countryCode != "" {
+		filters = append(filters, fmt.Sprintf(`country_code = "%s"`, countryCode))
+	} else if countryParam != "" {
+		filters = append(filters, fmt.Sprintf(`(country_code = "%s" OR country_name = "%s")`, countryParam, countryParam))
 	}
 	if cuisine := strings.TrimSpace(r.URL.Query().Get("cuisine")); cuisine != "" {
 		filters = append(filters, fmt.Sprintf(`cuisine = "%s"`, cuisine))

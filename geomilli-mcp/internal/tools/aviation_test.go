@@ -181,9 +181,9 @@ func TestFindAirports_ValidationErrors(t *testing.T) {
 		errSubstr string
 	}{
 		{
-			name:      "invalid country code length",
-			args:      map[string]any{"country": "BEL"},
-			errSubstr: "Country code must be a 2-letter ISO",
+			name:      "invalid country",
+			args:      map[string]any{"country": "Atlantis"},
+			errSubstr: "Unrecognized country",
 		},
 		{
 			name:      "invalid iata length",
@@ -417,5 +417,76 @@ func TestGetAirport_NotFound(t *testing.T) {
 	text := res.Content[0].(*mcp.TextContent).Text
 	if !strings.Contains(text, "Airport not found for code: ZZZ") {
 		t.Errorf("expected not found message, got %q", text)
+	}
+}
+
+func TestFindAirports_CountryNormalization(t *testing.T) {
+	var capturedCountry string
+	var capturedQuery string
+
+	clientSession, cleanup := setupAviationTest(t, func(w http.ResponseWriter, r *http.Request) {
+		capturedCountry = r.URL.Query().Get("country")
+		capturedQuery = r.URL.Query().Get("q")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"total_hits": 1, "results": [{"id": "a1", "name_display": "Brussels Airport", "country_code": "BE"}]}`))
+	})
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// 1. Full country name "Belgium"
+	res, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
+		Name:      "find_airports",
+		Arguments: map[string]any{"country": "Belgium"},
+	})
+	if err != nil || res.IsError {
+		t.Fatalf("expected success for country=Belgium, got err=%v, res=%+v", err, res)
+	}
+	if capturedCountry != "BE" {
+		t.Errorf("expected capturedCountry=BE for country=Belgium, got %s", capturedCountry)
+	}
+
+	// 2. ISO-3 code "BEL"
+	res, err = clientSession.CallTool(ctx, &mcp.CallToolParams{
+		Name:      "find_airports",
+		Arguments: map[string]any{"country": "BEL"},
+	})
+	if err != nil || res.IsError {
+		t.Fatalf("expected success for country=BEL, got err=%v, res=%+v", err, res)
+	}
+	if capturedCountry != "BE" {
+		t.Errorf("expected capturedCountry=BE for country=BEL, got %s", capturedCountry)
+	}
+
+	// 3. Query is country name "belgium"
+	res, err = clientSession.CallTool(ctx, &mcp.CallToolParams{
+		Name:      "find_airports",
+		Arguments: map[string]any{"query": "belgium"},
+	})
+	if err != nil || res.IsError {
+		t.Fatalf("expected success for query=belgium, got err=%v, res=%+v", err, res)
+	}
+	if capturedCountry != "BE" {
+		t.Errorf("expected capturedCountry=BE for query=belgium, got %s", capturedCountry)
+	}
+	if capturedQuery != "" {
+		t.Errorf("expected query cleared for pure country search, got %q", capturedQuery)
+	}
+
+	// 4. Query is "airports in belgium"
+	res, err = clientSession.CallTool(ctx, &mcp.CallToolParams{
+		Name:      "find_airports",
+		Arguments: map[string]any{"query": "airports in belgium"},
+	})
+	if err != nil || res.IsError {
+		t.Fatalf("expected success for query='airports in belgium', got err=%v, res=%+v", err, res)
+	}
+	if capturedCountry != "BE" {
+		t.Errorf("expected capturedCountry=BE for query='airports in belgium', got %s", capturedCountry)
+	}
+	if capturedQuery != "" {
+		t.Errorf("expected query cleared for 'airports in belgium', got %q", capturedQuery)
 	}
 }

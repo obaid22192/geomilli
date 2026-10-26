@@ -215,9 +215,9 @@ func TestListRegions_ValidationErrors(t *testing.T) {
 			errSubstr: "Country code is required",
 		},
 		{
-			name:      "country code too long",
-			args:      map[string]any{"country_code": "BEL"},
-			errSubstr: "Country code must be a 2-letter ISO",
+			name:      "invalid country",
+			args:      map[string]any{"country_code": "Atlantis"},
+			errSubstr: "Unrecognized country",
 		},
 		{
 			name:      "unsupported language",
@@ -420,9 +420,9 @@ func TestListCities_ValidationErrors(t *testing.T) {
 			errSubstr: "Country code is required",
 		},
 		{
-			name:      "country code too long",
-			args:      map[string]any{"country_code": "BELGIUM"},
-			errSubstr: "Country code must be a 2-letter ISO",
+			name:      "invalid country",
+			args:      map[string]any{"country_code": "Atlantis"},
+			errSubstr: "Unrecognized country",
 		},
 		{
 			name:      "unsupported language",

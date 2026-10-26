@@ -102,9 +102,12 @@ func setupTestRouter() (*chi.Mux, *metrics.Collector) {
 					PopularityScore: 0.95,
 				}
 
-				if searchReq.Filter != "" && searchReq.Filter == `class = "Airport"` {
+				if strings.Contains(filterStr, `class = "Airport"`) {
 					samplePlace.Class = "Airport"
 					samplePlace.NameDisplay = "Brussels Airport"
+				} else if strings.Contains(filterStr, `class = "Region"`) {
+					samplePlace.Class = "Region"
+					samplePlace.NameDisplay = "Flanders"
 				}
 
 				respObj := meili.SearchResponse{
@@ -350,20 +353,83 @@ func TestPlaceDetailsHandler(t *testing.T) {
 func TestAirportsHandler(t *testing.T) {
 	r, _ := setupTestRouter()
 
-	req := httptest.NewRequest(http.MethodGet, "/v1/airports?q=brussels", nil)
-	rec := httptest.NewRecorder()
-	r.ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusOK {
-		t.Fatalf("expected 200, got %d", rec.Code)
+	testURLs := []string{
+		"/v1/airports?q=brussels",
+		"/v1/airports?country=Belgium",
+		"/v1/airports?country=BE",
+		"/v1/airports?q=belgium",
+		"/v1/airports?q=airports+in+belgium",
 	}
 
-	var resp AirportsResponse
-	if err := json.Unmarshal(rec.Body.Bytes(), &resp); err != nil {
-		t.Fatalf("failed to decode airports response: %v", err)
+	for _, u := range testURLs {
+		req := httptest.NewRequest(http.MethodGet, u, nil)
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("for URL %s expected 200, got %d", u, rec.Code)
+		}
+
+		var resp AirportsResponse
+		if err := json.Unmarshal(rec.Body.Bytes(), &resp); err != nil {
+			t.Fatalf("for URL %s failed to decode airports response: %v", u, err)
+		}
+		if len(resp.Results) == 0 {
+			t.Fatalf("for URL %s expected airports result", u)
+		}
+		if resp.Results[0].Class != "Airport" {
+			t.Fatalf("for URL %s expected class Airport, got %s", u, resp.Results[0].Class)
+		}
 	}
-	if len(resp.Results) == 0 {
-		t.Fatalf("expected airports result")
+}
+
+func TestCountryResolutionInHandlers(t *testing.T) {
+	r, _ := setupTestRouter()
+
+	// 1. Autocomplete with country name
+	reqAuto := httptest.NewRequest(http.MethodGet, "/v1/autocomplete?q=brussels&country=Belgium", nil)
+	recAuto := httptest.NewRecorder()
+	r.ServeHTTP(recAuto, reqAuto)
+	if recAuto.Code != http.StatusOK {
+		t.Fatalf("expected 200 for autocomplete with country=Belgium, got %d", recAuto.Code)
+	}
+
+	// 2. Search with country name
+	reqSearch := httptest.NewRequest(http.MethodGet, "/v1/search?q=brussels&country=Belgium", nil)
+	recSearch := httptest.NewRecorder()
+	r.ServeHTTP(recSearch, reqSearch)
+	if recSearch.Code != http.StatusOK {
+		t.Fatalf("expected 200 for search with country=Belgium, got %d", recSearch.Code)
+	}
+
+	// 3. Admin hierarchy regions with country name
+	reqRegions := httptest.NewRequest(http.MethodGet, "/v1/countries/Belgium/regions", nil)
+	recRegions := httptest.NewRecorder()
+	r.ServeHTTP(recRegions, reqRegions)
+	if recRegions.Code != http.StatusOK {
+		t.Fatalf("expected 200 for /v1/countries/Belgium/regions, got %d", recRegions.Code)
+	}
+	var regResp RegionsListResponse
+	if err := json.Unmarshal(recRegions.Body.Bytes(), &regResp); err != nil {
+		t.Fatalf("failed to decode regions response: %v", err)
+	}
+	if regResp.CountryCode != "BE" {
+		t.Fatalf("expected normalized country code BE, got %s", regResp.CountryCode)
+	}
+
+	// 4. Admin hierarchy cities with country name
+	reqCities := httptest.NewRequest(http.MethodGet, "/v1/countries/Belgium/cities", nil)
+	recCities := httptest.NewRecorder()
+	r.ServeHTTP(recCities, reqCities)
+	if recCities.Code != http.StatusOK {
+		t.Fatalf("expected 200 for /v1/countries/Belgium/cities, got %d", recCities.Code)
+	}
+	var citResp CitiesListResponse
+	if err := json.Unmarshal(recCities.Body.Bytes(), &citResp); err != nil {
+		t.Fatalf("failed to decode cities response: %v", err)
+	}
+	if citResp.CountryCode != "BE" {
+		t.Fatalf("expected normalized country code BE, got %s", citResp.CountryCode)
 	}
 }
 

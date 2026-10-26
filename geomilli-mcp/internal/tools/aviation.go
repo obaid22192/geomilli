@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/geomilli/geomilli-mcp/internal/apiclient"
+	"github.com/geomilli/geomilli-mcp/internal/countries"
 	"github.com/geomilli/geomilli-mcp/internal/shape"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,7 +14,7 @@ import (
 // FindAirportsInput defines parameters for the find_airports tool.
 type FindAirportsInput struct {
 	Query   string   `json:"query,omitempty" jsonschema:"Free-text search query (e.g. 'Brussels', 'Heathrow', 'Charles de Gaulle')"`
-	Country string   `json:"country,omitempty" jsonschema:"ISO 3166-1 alpha-2 country code filter (e.g. 'BE', 'FR', 'US')"`
+	Country string   `json:"country,omitempty" jsonschema:"ISO 3166-1 alpha-2 country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France', 'US')"`
 	IATA    string   `json:"iata,omitempty" jsonschema:"3-letter IATA airport code filter (e.g. 'BRU', 'LHR')"`
 	ICAO    string   `json:"icao,omitempty" jsonschema:"4-letter ICAO airport code filter (e.g. 'EBBR', 'EGLL')"`
 	Lat     *float64 `json:"lat,omitempty" jsonschema:"Latitude coordinate (-90 to 90) for proximity-based ranking"`
@@ -52,9 +53,24 @@ func registerAviation(s *mcp.Server, d Deps) {
 		}
 		limit = ClampInt(limit, 1, 25)
 
-		country := strings.ToUpper(strings.TrimSpace(in.Country))
-		if country != "" && len(country) != 2 {
-			return nil, FindAirportsOutput{}, ToolError("Country code must be a 2-letter ISO 3166-1 alpha-2 code, got %q", in.Country)
+		country, err := validateCountry(in.Country)
+		if err != nil {
+			return nil, FindAirportsOutput{}, err
+		}
+
+		query := strings.TrimSpace(in.Query)
+		if country == "" && query != "" {
+			if code, ok := countries.NormalizeCode(query); ok {
+				country = code
+				query = ""
+			} else if cleaned, code, found := countries.ExtractFromQuery(query); found {
+				country = code
+				if strings.EqualFold(cleaned, "airports") || strings.EqualFold(cleaned, "airport") {
+					query = ""
+				} else {
+					query = cleaned
+				}
+			}
 		}
 
 		iata := strings.ToUpper(strings.TrimSpace(in.IATA))
@@ -92,7 +108,7 @@ func registerAviation(s *mcp.Server, d Deps) {
 		}
 
 		res, err := d.API.SearchAirports(ctx, apiclient.SearchAirportsParams{
-			Query:   strings.TrimSpace(in.Query),
+			Query:   query,
 			Country: country,
 			IATA:    iata,
 			ICAO:    icao,

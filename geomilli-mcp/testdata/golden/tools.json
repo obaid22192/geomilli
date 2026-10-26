@@ -6,7 +6,7 @@
       "additionalProperties": false,
       "properties": {
         "country": {
-          "description": "ISO 3166-1 alpha-2 country code filter (e.g. 'BE', 'FR', 'US')",
+          "description": "ISO 3166-1 alpha-2 country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France', 'US')",
           "type": "string"
         },
         "iata": {
@@ -369,7 +369,7 @@
           "type": "string"
         },
         "country": {
-          "description": "Optional ISO 3166-1 alpha-2 country code to restrict results (e.g. 'BE', 'FR')",
+          "description": "Optional ISO 3166-1 alpha-2 country code or country name to restrict results (e.g. 'BE', 'Belgium', 'FR', 'France')",
           "type": "string"
         },
         "lang": {
@@ -1236,7 +1236,7 @@
       "additionalProperties": false,
       "properties": {
         "country_code": {
-          "description": "ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE')",
+          "description": "ISO 3166-1 alpha-2 country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France', 'DE', 'Germany')",
           "type": "string"
         },
         "lang": {
@@ -1731,7 +1731,7 @@
       "additionalProperties": false,
       "properties": {
         "country_code": {
-          "description": "ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE')",
+          "description": "ISO 3166-1 alpha-2 country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France', 'DE', 'Germany')",
           "type": "string"
         },
         "lang": {
@@ -2410,7 +2410,7 @@
           "type": "string"
         },
         "country": {
-          "description": "Filter by 2-letter ISO country code (e.g. 'BE', 'FR')",
+          "description": "Filter by 2-letter ISO country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France')",
           "type": "string"
         },
         "cuisine": {

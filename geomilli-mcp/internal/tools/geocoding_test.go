@@ -140,9 +140,9 @@ func TestGeocode_Validation(t *testing.T) {
 			expectError: "query parameter is required",
 		},
 		{
-			name:        "invalid country code length",
-			args:        map[string]any{"query": "Brussels", "country": "BELGIUM"},
-			expectError: "country must be a 2-letter ISO",
+			name:        "invalid country",
+			args:        map[string]any{"query": "Brussels", "country": "Atlantis"},
+			expectError: "Unrecognized country",
 		},
 		{
 			name:        "unknown class",

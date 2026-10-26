@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/geomilli/geomilli-mcp/internal/apiclient"
+	"github.com/geomilli/geomilli-mcp/internal/countries"
 	"github.com/geomilli/geomilli-mcp/internal/shape"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,7 +14,7 @@ import (
 // GeocodeInput defines input parameters for forward geocoding.
 type GeocodeInput struct {
 	Query   string   `json:"query" jsonschema:"Search query or place name to geocode (e.g. 'Atomium', 'Brussels', 'Grand Place')"`
-	Country string   `json:"country,omitempty" jsonschema:"Optional ISO 3166-1 alpha-2 country code to restrict results (e.g. 'BE', 'FR')"`
+	Country string   `json:"country,omitempty" jsonschema:"Optional ISO 3166-1 alpha-2 country code or country name to restrict results (e.g. 'BE', 'Belgium', 'FR', 'France')"`
 	Class   string   `json:"class,omitempty" jsonschema:"Optional taxonomy class filter (e.g. 'City', 'Attraction', 'Airport', 'Hotel')"`
 	Lat     *float64 `json:"lat,omitempty" jsonschema:"Optional latitude for proximity-biased results (-90 to 90)"`
 	Lng     *float64 `json:"lng,omitempty" jsonschema:"Optional longitude for proximity-biased results (-180 to 180)"`
@@ -212,16 +213,19 @@ func validateClass(class string, d Deps) (string, error) {
 	return class, nil
 }
 
-// validateCountry validates and uppercases a 2-letter ISO 3166-1 alpha-2 country code.
+// validateCountry normalizes a country code or country name to a canonical 2-letter ISO 3166-1 alpha-2 code.
 func validateCountry(country string) (string, error) {
-	country = strings.ToUpper(strings.TrimSpace(country))
+	country = strings.TrimSpace(country)
 	if country == "" {
 		return "", nil
 	}
-	if len(country) != 2 {
-		return "", ToolError("country must be a 2-letter ISO 3166-1 alpha-2 code (e.g. 'BE', 'FR'), got %q", country)
+	if code, ok := countries.NormalizeCode(country); ok {
+		return code, nil
 	}
-	return country, nil
+	if len(country) == 2 {
+		return strings.ToUpper(country), nil
+	}
+	return "", ToolError("Unrecognized country %q. Please provide a 2-letter ISO country code (e.g. 'BE') or common country name (e.g. 'Belgium').", country)
 }
 
 // validateLatLng validates that lat and lng are within valid geographic bounds.

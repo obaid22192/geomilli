@@ -175,13 +175,13 @@ func TestSearchPlaces_ValidationAndClamping(t *testing.T) {
 		t.Fatalf("expected tool error for unknown class, got: err=%v, res=%+v", err, res)
 	}
 
-	// 2. Validation: invalid country code length
+	// 2. Validation: invalid country
 	res, err = env.clientSession.CallTool(ctx, &mcp.CallToolParams{
 		Name:      "search_places",
-		Arguments: map[string]any{"country": "BEL"},
+		Arguments: map[string]any{"country": "Atlantis"},
 	})
 	if err != nil || !res.IsError {
-		t.Fatalf("expected tool error for 3-letter country code")
+		t.Fatalf("expected tool error for unrecognized country")
 	}
 
 	// 3. Validation: star_rating > 5

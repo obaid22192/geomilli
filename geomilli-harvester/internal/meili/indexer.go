@@ -81,6 +81,7 @@ func (i *Indexer) ApplyPlaceSettings(indexUID string) error {
 			"class",
 			"subclass",
 			"country_code",
+			"country_name",
 			"admin_level",
 			"_geo",
 			"star_rating",

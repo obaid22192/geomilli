@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/geomilli/geomilli-api/internal/countries"
 	"github.com/geomilli/geomilli-api/internal/meili"
 	appMiddleware "github.com/geomilli/geomilli-api/internal/middleware"
 	"github.com/geomilli/geomilli-api/internal/schema"
@@ -23,15 +24,34 @@ type AutocompleteResponse struct {
 func (h *Handler) Autocomplete(w http.ResponseWriter, r *http.Request) {
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
 	lang := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("lang")))
-	country := strings.ToUpper(strings.TrimSpace(r.URL.Query().Get("country")))
+	countryParam := strings.TrimSpace(r.URL.Query().Get("country"))
 	class := strings.TrimSpace(r.URL.Query().Get("class"))
 	subclass := strings.TrimSpace(r.URL.Query().Get("subclass"))
+
+	var countryCode string
+	if countryParam != "" {
+		if code, ok := countries.NormalizeCode(countryParam); ok {
+			countryCode = code
+		} else if len(countryParam) == 2 {
+			countryCode = strings.ToUpper(countryParam)
+		}
+	}
+
+	// Smart query extraction if country parameter was not explicitly provided
+	if countryCode == "" && q != "" {
+		if cleaned, code, found := countries.ExtractFromQuery(q); found && cleaned != "" {
+			countryCode = code
+			q = cleaned
+		}
+	}
 
 	limit := parseLimit(r, DefaultAutocompleteLimit, MaxAutocompleteLimit)
 
 	var filters []string
-	if country != "" {
-		filters = append(filters, fmt.Sprintf(`country_code = "%s"`, country))
+	if countryCode != "" {
+		filters = append(filters, fmt.Sprintf(`country_code = "%s"`, countryCode))
+	} else if countryParam != "" {
+		filters = append(filters, fmt.Sprintf(`(country_code = "%s" OR country_name = "%s")`, countryParam, countryParam))
 	}
 	if class != "" {
 		filters = append(filters, fmt.Sprintf(`class = "%s"`, class))

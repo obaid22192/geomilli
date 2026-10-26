@@ -25,6 +25,9 @@ Whenever making user-visible, functional, architectural, or breaking changes, co
 ## [Unreleased]
 
 ### Added
+- **api**: Added intelligent country resolution (`internal/countries`) across all endpoints (`/v1/airports`, `/v1/autocomplete`, `/v1/search`, `/v1/countries/{code}/regions`, `/v1/countries/{code}/cities`). Accepts ISO 3166-1 alpha-2, alpha-3, and common country names/aliases (e.g. 'Belgium', 'Belgique', 'Deutschland', 'UK', 'USA'), and performs smart natural language country extraction on query strings (e.g. 'airports in belgium', 'brussels, belgium', 'belgium').
+- **mcp**: Enhanced `find_airports`, `geocode`, `search_places`, `list_regions`, and `list_cities` tools to accept country names and alpha-3 codes in addition to alpha-2 codes with automatic normalization.
+- **harvester**: Added `country_name` to Meilisearch `FilterableAttributes` in index settings for dual filtering by `country_code` and `country_name`.
 - **mcp**: Complete MCP tool catalog (13 Tier-1 tools + 3 gated ops tools) in `geomilli-mcp`:
   - Geocoding: `geocode`, `reverse_geocode`
   - Discovery: `search_places`, `find_nearby`, `places_in_area`, `get_place`

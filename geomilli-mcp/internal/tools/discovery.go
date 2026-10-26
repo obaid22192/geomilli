@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/geomilli/geomilli-mcp/internal/apiclient"
+	"github.com/geomilli/geomilli-mcp/internal/countries"
 	"github.com/geomilli/geomilli-mcp/internal/shape"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -15,7 +16,7 @@ type SearchPlacesInput struct {
 	Query      string `json:"query,omitempty" jsonschema:"Full-text search keywords or place name"`
 	Class      string `json:"class,omitempty" jsonschema:"Filter by taxonomy class (e.g. 'Restaurant', 'Hotel', 'Attraction')"`
 	Subclass   string `json:"subclass,omitempty" jsonschema:"Filter by taxonomy subclass (e.g. 'museum', 'monument', 'cafe')"`
-	Country    string `json:"country,omitempty" jsonschema:"Filter by 2-letter ISO country code (e.g. 'BE', 'FR')"`
+	Country    string `json:"country,omitempty" jsonschema:"Filter by 2-letter ISO country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France')"`
 	Cuisine    string `json:"cuisine,omitempty" jsonschema:"Filter by cuisine type (e.g. 'italian', 'french', 'japanese')"`
 	StarRating int    `json:"star_rating,omitempty" jsonschema:"Filter by minimum star rating for hotels (1 to 5)"`
 	Lang       string `json:"lang,omitempty" jsonschema:"Preferred language code for place names (e.g. 'en', 'fr')"`
@@ -119,6 +120,14 @@ func registerDiscovery(s *mcp.Server, d Deps) {
 			return nil, SearchPlacesOutput{}, err
 		}
 
+		query := strings.TrimSpace(in.Query)
+		if country == "" && query != "" {
+			if cleaned, code, found := countries.ExtractFromQuery(query); found && cleaned != "" {
+				country = code
+				query = cleaned
+			}
+		}
+
 		class, err := validateClass(in.Class, d)
 		if err != nil {
 			return nil, SearchPlacesOutput{}, err
@@ -132,7 +141,7 @@ func registerDiscovery(s *mcp.Server, d Deps) {
 		filterExpr := buildSearchFilter(class, strings.TrimSpace(in.Subclass), country, strings.TrimSpace(in.Cuisine), in.StarRating)
 
 		resp, err := d.API.Search(ctx, apiclient.SearchParams{
-			Query:  strings.TrimSpace(in.Query),
+			Query:  query,
 			Filter: filterExpr,
 			Lang:   lang,
 			Limit:  limit,

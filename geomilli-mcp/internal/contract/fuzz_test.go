@@ -43,18 +43,18 @@ func TestInputValidation_TableDriven(t *testing.T) {
 			errorContains: "query parameter is required",
 		},
 		{
-			name:          "geocode_invalid_country_code_length_3",
+			name:          "geocode_invalid_country",
 			tool:          "geocode",
-			args:          map[string]any{"query": "Brussels", "country": "BEL"},
+			args:          map[string]any{"query": "Brussels", "country": "Atlantis"},
 			expectIsError: true,
-			errorContains: "country must be a 2-letter ISO 3166-1 alpha-2 code",
+			errorContains: "Unrecognized country \"Atlantis\"",
 		},
 		{
 			name:          "geocode_invalid_country_code_length_1",
 			tool:          "geocode",
 			args:          map[string]any{"query": "Brussels", "country": "B"},
 			expectIsError: true,
-			errorContains: "country must be a 2-letter ISO 3166-1 alpha-2 code",
+			errorContains: "Unrecognized country \"B\"",
 		},
 		{
 			name:          "geocode_lat_without_lng",
@@ -198,11 +198,11 @@ func TestInputValidation_TableDriven(t *testing.T) {
 			errorContains: "Country code is required",
 		},
 		{
-			name:          "list_regions_invalid_country_length",
+			name:          "list_regions_invalid_country",
 			tool:          "list_regions",
-			args:          map[string]any{"country_code": "BELGIUM"},
+			args:          map[string]any{"country_code": "Atlantis"},
 			expectIsError: true,
-			errorContains: "Country code must be a 2-letter ISO 3166-1 alpha-2 code",
+			errorContains: "Unrecognized country \"Atlantis\"",
 		},
 		{
 			name:          "list_cities_empty_country",

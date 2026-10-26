@@ -27,7 +27,7 @@ type ListCountriesOutput struct {
 
 // ListRegionsInput defines input parameters for list_regions.
 type ListRegionsInput struct {
-	CountryCode string `json:"country_code" jsonschema:"ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE')"`
+	CountryCode string `json:"country_code" jsonschema:"ISO 3166-1 alpha-2 country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France', 'DE', 'Germany')"`
 	Lang        string `json:"lang,omitempty" jsonschema:"Preferred language code for localized region names (e.g. 'en', 'fr')"`
 }
 
@@ -40,7 +40,7 @@ type ListRegionsOutput struct {
 
 // ListCitiesInput defines input parameters for list_cities.
 type ListCitiesInput struct {
-	CountryCode string `json:"country_code" jsonschema:"ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE')"`
+	CountryCode string `json:"country_code" jsonschema:"ISO 3166-1 alpha-2 country code or country name (e.g. 'BE', 'Belgium', 'FR', 'France', 'DE', 'Germany')"`
 	Limit       int    `json:"limit,omitempty" jsonschema:"Maximum number of cities to return (default: 20, min: 1, max: 100)"`
 	Offset      int    `json:"offset,omitempty" jsonschema:"Pagination offset (default: 0)"`
 	Lang        string `json:"lang,omitempty" jsonschema:"Preferred language code for localized city names"`
@@ -103,12 +103,12 @@ func registerAdminHierarchy(s *mcp.Server, d Deps) {
 		Description: "List administrative regions, provinces, or states for a specific country by ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE').",
 		Annotations: ReadOnly,
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in ListRegionsInput) (*mcp.CallToolResult, ListRegionsOutput, error) {
-		countryCode := strings.ToUpper(strings.TrimSpace(in.CountryCode))
-		if countryCode == "" {
+		if strings.TrimSpace(in.CountryCode) == "" {
 			return nil, ListRegionsOutput{}, ToolError("Country code is required (e.g. 'BE', 'FR')")
 		}
-		if len(countryCode) != 2 {
-			return nil, ListRegionsOutput{}, ToolError("Country code must be a 2-letter ISO 3166-1 alpha-2 code, got %q", in.CountryCode)
+		countryCode, err := validateCountry(in.CountryCode)
+		if err != nil {
+			return nil, ListRegionsOutput{}, err
 		}
 
 		lang := in.Lang
@@ -159,12 +159,12 @@ func registerAdminHierarchy(s *mcp.Server, d Deps) {
 		Description: "List major cities and towns for a specific country by ISO 3166-1 alpha-2 country code, ordered by population and popularity score.",
 		Annotations: ReadOnly,
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in ListCitiesInput) (*mcp.CallToolResult, ListCitiesOutput, error) {
-		countryCode := strings.ToUpper(strings.TrimSpace(in.CountryCode))
-		if countryCode == "" {
+		if strings.TrimSpace(in.CountryCode) == "" {
 			return nil, ListCitiesOutput{}, ToolError("Country code is required (e.g. 'BE', 'FR')")
 		}
-		if len(countryCode) != 2 {
-			return nil, ListCitiesOutput{}, ToolError("Country code must be a 2-letter ISO 3166-1 alpha-2 code, got %q", in.CountryCode)
+		countryCode, err := validateCountry(in.CountryCode)
+		if err != nil {
+			return nil, ListCitiesOutput{}, err
 		}
 
 		limit := in.Limit

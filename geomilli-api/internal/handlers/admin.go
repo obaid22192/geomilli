@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/geomilli/geomilli-api/internal/countries"
 	"github.com/geomilli/geomilli-api/internal/meili"
 	appMiddleware "github.com/geomilli/geomilli-api/internal/middleware"
 	"github.com/geomilli/geomilli-api/internal/schema"
@@ -107,10 +108,14 @@ func (h *Handler) ListCountries(w http.ResponseWriter, r *http.Request) {
 
 // ListCountryRegions returns provinces/regions for a specific country.
 func (h *Handler) ListCountryRegions(w http.ResponseWriter, r *http.Request) {
-	code := strings.ToUpper(strings.TrimSpace(chi.URLParam(r, "code")))
-	if code == "" {
+	rawCode := strings.TrimSpace(chi.URLParam(r, "code"))
+	if rawCode == "" {
 		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing country code")
 		return
+	}
+	code := strings.ToUpper(rawCode)
+	if norm, ok := countries.NormalizeCode(rawCode); ok {
+		code = norm
 	}
 
 	filter := fmt.Sprintf(`class = "Region" AND country_code = "%s"`, code)
@@ -135,10 +140,14 @@ func (h *Handler) ListCountryRegions(w http.ResponseWriter, r *http.Request) {
 
 // ListCountryCities returns cities and towns for a specific country, sorted by population.
 func (h *Handler) ListCountryCities(w http.ResponseWriter, r *http.Request) {
-	code := strings.ToUpper(strings.TrimSpace(chi.URLParam(r, "code")))
-	if code == "" {
+	rawCode := strings.TrimSpace(chi.URLParam(r, "code"))
+	if rawCode == "" {
 		writeError(w, http.StatusBadRequest, ErrMissingParameter, "Missing country code")
 		return
+	}
+	code := strings.ToUpper(rawCode)
+	if norm, ok := countries.NormalizeCode(rawCode); ok {
+		code = norm
 	}
 
 	limit := parseLimit(r, DefaultCitiesLimit, MaxCitiesLimit)
