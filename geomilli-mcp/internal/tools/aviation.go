@@ -41,7 +41,7 @@ type GetAirportOutput struct {
 
 func registerAviation(s *mcp.Server, d Deps) {
 	// Tool 1: find_airports
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "find_airports",
 		Description: "Search for airports by name, IATA code, ICAO code, country, or proximity to geographic coordinates. Returns matching airports with coordinates, codes, and location details.",
 		Annotations: ReadOnlyOpenWorld,
@@ -121,7 +121,7 @@ func registerAviation(s *mcp.Server, d Deps) {
 	})
 
 	// Tool 2: get_airport
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "get_airport",
 		Description: "Retrieve detailed information for a specific airport by its 3-letter IATA code (e.g. 'BRU', 'JFK') or 4-letter ICAO code (e.g. 'EBBR', 'KJFK').",
 		Annotations: ReadOnly,

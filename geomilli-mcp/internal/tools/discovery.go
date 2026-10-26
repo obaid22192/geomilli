@@ -93,7 +93,7 @@ type GetPlaceOutput struct {
 
 func registerDiscovery(s *mcp.Server, d Deps) {
 	// Tool 3: search_places
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "search_places",
 		Description: "Search places, destinations, and points of interest using full-text search and structured filters (class, subclass, country, cuisine, star rating).",
 		Annotations: ReadOnlyOpenWorld,
@@ -161,7 +161,7 @@ func registerDiscovery(s *mcp.Server, d Deps) {
 	})
 
 	// Tool 4: find_nearby
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "find_nearby",
 		Description: "Find points of interest (POIs) and destinations near coordinates within a specified radius (meters).",
 		Annotations: ReadOnlyOpenWorld,
@@ -232,7 +232,7 @@ func registerDiscovery(s *mcp.Server, d Deps) {
 	})
 
 	// Tool 5: places_in_area
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "places_in_area",
 		Description: "Find places and destinations within a geographic bounding box defined by minimum and maximum latitude and longitude coordinates.",
 		Annotations: ReadOnlyOpenWorld,
@@ -300,7 +300,7 @@ func registerDiscovery(s *mcp.Server, d Deps) {
 	})
 
 	// Tool 6: get_place
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "get_place",
 		Description: "Retrieve detailed metadata for a single place by its Geomilli ID or Wikidata QID.",
 		Annotations: ReadOnly,

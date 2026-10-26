@@ -48,7 +48,7 @@ type ReverseGeocodeOutput struct {
 
 func registerGeocoding(s *mcp.Server, d Deps) {
 	// Tool 1: geocode
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "geocode",
 		Description: "Forward geocoding: resolve place names, addresses, or landmarks into coordinates and candidate places.",
 		Annotations: ReadOnlyOpenWorld,
@@ -123,7 +123,7 @@ func registerGeocoding(s *mcp.Server, d Deps) {
 	})
 
 	// Tool 2: reverse_geocode
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "reverse_geocode",
 		Description: "Reverse geocoding: resolve latitude and longitude coordinates into a structured address, administrative hierarchy, and closest place.",
 		Annotations: ReadOnly,

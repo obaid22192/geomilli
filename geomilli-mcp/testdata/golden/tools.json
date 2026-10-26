@@ -23,10 +23,7 @@
         },
         "lat": {
           "description": "Latitude coordinate (-90 to 90) for proximity-based ranking",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "limit": {
           "description": "Maximum number of airports to return (default: 10, min: 1, max: 25)",
@@ -34,10 +31,7 @@
         },
         "lng": {
           "description": "Longitude coordinate (-180 to 180) for proximity-based ranking",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "query": {
           "description": "Free-text search query (e.g. 'Brussels', 'Heathrow', 'Charles de Gaulle')",
@@ -61,10 +55,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -73,10 +64,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -91,10 +79,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -118,19 +103,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -169,10 +148,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "total_hits": {
           "description": "Total matching airports found",
@@ -263,10 +239,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -275,10 +248,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -293,10 +263,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -320,19 +287,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -371,10 +332,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "radius_meters": {
           "description": "Effective search radius in meters",
@@ -420,10 +378,7 @@
         },
         "lat": {
           "description": "Optional latitude for proximity-biased results (-90 to 90)",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "limit": {
           "description": "Maximum candidate places to return (default: 10, max: 10)",
@@ -431,10 +386,7 @@
         },
         "lng": {
           "description": "Optional longitude for proximity-biased results (-180 to 180)",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "query": {
           "description": "Search query or place name to geocode (e.g. 'Atomium', 'Brussels', 'Grand Place')",
@@ -461,10 +413,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -473,10 +422,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -491,10 +437,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -518,19 +461,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -569,10 +506,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "query": {
           "description": "Search query that was geocoded",
@@ -630,10 +564,7 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "admin_level": {
               "type": "integer"
@@ -642,10 +573,7 @@
               "items": {
                 "type": "number"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "class": {
               "type": "string"
@@ -660,10 +588,7 @@
               "type": "string"
             },
             "distance_meters": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": "number"
             },
             "iata_code": {
               "type": "string"
@@ -687,19 +612,13 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "name_alt_historical": {
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "names_by_language": {
               "additionalProperties": {
@@ -809,10 +728,7 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "admin_level": {
               "type": "integer"
@@ -821,10 +737,7 @@
               "items": {
                 "type": "number"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "class": {
               "type": "string"
@@ -839,10 +752,7 @@
               "type": "string"
             },
             "distance_meters": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": "number"
             },
             "entity_id": {
               "type": "string"
@@ -860,19 +770,13 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "name_alt_historical": {
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "name_display": {
               "type": "string"
@@ -915,10 +819,7 @@
             "_geo",
             "popularity_score"
           ],
-          "type": [
-            "null",
-            "object"
-          ]
+          "type": "object"
         },
         "nearby_places": {
           "description": "Nearby places if include_nearby was requested",
@@ -932,10 +833,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -944,10 +842,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -962,10 +857,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -989,19 +881,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -1040,10 +926,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "place": {
           "additionalProperties": false,
@@ -1056,10 +939,7 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "admin_level": {
               "type": "integer"
@@ -1068,10 +948,7 @@
               "items": {
                 "type": "number"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "class": {
               "type": "string"
@@ -1086,10 +963,7 @@
               "type": "string"
             },
             "distance_meters": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": "number"
             },
             "iata_code": {
               "type": "string"
@@ -1113,19 +987,13 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "name_alt_historical": {
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "names_by_language": {
               "additionalProperties": {
@@ -1229,10 +1097,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "type": [
-                    "null",
-                    "array"
-                  ]
+                  "type": "array"
                 },
                 "current_country": {
                   "type": "string"
@@ -1262,10 +1127,7 @@
                 "docs_processed",
                 "started_at"
               ],
-              "type": [
-                "null",
-                "object"
-              ]
+              "type": "object"
             },
             "error": {
               "description": "Error message if importer probe failed",
@@ -1298,10 +1160,7 @@
                 "disk_cache_mb",
                 "sqlite_cache_entries"
               ],
-              "type": [
-                "null",
-                "object"
-              ]
+              "type": "object"
             },
             "state": {
               "description": "Harvester daemon operational state (e.g. idle, running, stopped, unreachable)",
@@ -1413,10 +1272,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -1425,10 +1281,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -1443,10 +1296,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -1470,19 +1320,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -1521,10 +1365,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "country_code": {
           "description": "ISO 3166-1 alpha-2 country code",
@@ -1593,10 +1434,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "total_countries": {
           "description": "Total count of indexed countries",
@@ -1667,10 +1505,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "concurrency": {
           "description": "Max concurrent country import workers configured",
@@ -1724,10 +1559,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         }
       },
       "required": [
@@ -1811,10 +1643,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "total_countries": {
           "description": "Total matching countries returned",
@@ -1865,10 +1694,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               }
             },
             "required": [
@@ -1879,10 +1705,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "total_classes": {
           "description": "Total number of canonical classes",
@@ -1940,10 +1763,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -1952,10 +1772,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -1970,10 +1787,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -1997,19 +1811,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -2048,10 +1856,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "total_hits": {
           "description": "Total count of administrative regions/provinces found",
@@ -2079,17 +1884,11 @@
       "properties": {
         "from_lat": {
           "description": "Starting latitude coordinate (-90 to 90)",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "from_lng": {
           "description": "Starting longitude coordinate (-180 to 180)",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "from_place_id": {
           "description": "Starting place ID (resolved via API if coordinates omitted)",
@@ -2097,17 +1896,11 @@
         },
         "to_lat": {
           "description": "Destination latitude coordinate (-90 to 90)",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "to_lng": {
           "description": "Destination longitude coordinate (-180 to 180)",
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": "number"
         },
         "to_place_id": {
           "description": "Destination place ID (resolved via API if coordinates omitted)",
@@ -2295,10 +2088,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -2307,10 +2097,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -2325,10 +2112,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -2352,19 +2136,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -2403,10 +2181,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "total_hits": {
           "description": "Total matching places found in bounding box",
@@ -2491,10 +2266,7 @@
           "items": {
             "type": "string"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "closest_place": {
           "additionalProperties": false,
@@ -2507,10 +2279,7 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "admin_level": {
               "type": "integer"
@@ -2519,10 +2288,7 @@
               "items": {
                 "type": "number"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "class": {
               "type": "string"
@@ -2537,10 +2303,7 @@
               "type": "string"
             },
             "distance_meters": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": "number"
             },
             "iata_code": {
               "type": "string"
@@ -2564,19 +2327,13 @@
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "name_alt_historical": {
               "items": {
                 "type": "string"
               },
-              "type": [
-                "null",
-                "array"
-              ]
+              "type": "array"
             },
             "names_by_language": {
               "additionalProperties": {
@@ -2613,10 +2370,7 @@
             "lat",
             "lng"
           ],
-          "type": [
-            "null",
-            "object"
-          ]
+          "type": "object"
         },
         "lat": {
           "description": "Latitude of the query",
@@ -2713,10 +2467,7 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "admin_level": {
                 "type": "integer"
@@ -2725,10 +2476,7 @@
                 "items": {
                   "type": "number"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "class": {
                 "type": "string"
@@ -2743,10 +2491,7 @@
                 "type": "string"
               },
               "distance_meters": {
-                "type": [
-                  "null",
-                  "number"
-                ]
+                "type": "number"
               },
               "iata_code": {
                 "type": "string"
@@ -2770,19 +2515,13 @@
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "name_alt_historical": {
                 "items": {
                   "type": "string"
                 },
-                "type": [
-                  "null",
-                  "array"
-                ]
+                "type": "array"
               },
               "names_by_language": {
                 "additionalProperties": {
@@ -2821,10 +2560,7 @@
             ],
             "type": "object"
           },
-          "type": [
-            "null",
-            "array"
-          ]
+          "type": "array"
         },
         "query": {
           "description": "Query string searched",

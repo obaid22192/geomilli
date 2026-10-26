@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"reflect"
 
 	"github.com/geomilli/geomilli-mcp/internal/apiclient"
 	"github.com/geomilli/geomilli-mcp/internal/config"
 	"github.com/geomilli/geomilli-mcp/internal/taxonomy"
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -97,4 +99,82 @@ func FormatAPIError(action string, err error) error {
 		return fmt.Errorf("failed to %s: %s (status: %d)", action, apiErr.Message, apiErr.Status)
 	}
 	return fmt.Errorf("failed to %s: %w", action, err)
+}
+
+// RegisterTool registers a typed tool on the MCP server with clean, portable single-type schemas.
+// By default, reflection over Go pointers and slices produces `type: ["null", "X"]` arrays
+// in JSON Schema 2020-12. While legal in JSON Schema, this triggers portability warnings in MCP
+// Inspector and is rejected by single-type dialects such as Gemini Function Declarations and OpenAPI 3.0.
+// RegisterTool pre-infers the schemas and normalizes nullable types to portable single types.
+func RegisterTool[In, Out any](s *mcp.Server, t *mcp.Tool, h mcp.ToolHandlerFor[In, Out]) {
+	if t.InputSchema == nil && reflect.TypeFor[In]() != reflect.TypeFor[any]() {
+		schema, err := jsonschema.ForType(reflect.TypeFor[In](), nil)
+		if err == nil && schema != nil {
+			normalizeSchema(schema)
+			t.InputSchema = schema
+		}
+	}
+	if t.OutputSchema == nil && reflect.TypeFor[Out]() != reflect.TypeFor[any]() {
+		schema, err := jsonschema.ForType(reflect.TypeFor[Out](), nil)
+		if err == nil && schema != nil {
+			normalizeSchema(schema)
+			t.OutputSchema = schema
+		}
+	}
+	mcp.AddTool(s, t, h)
+}
+
+// normalizeSchema recursively converts multi-type arrays (e.g. `type: ["null", "number"]`
+// or `type: ["null", "array"]`) to single-type declarations (`type: "number"`, `type: "array"`).
+func normalizeSchema(s *jsonschema.Schema) {
+	if s == nil {
+		return
+	}
+	if len(s.Types) > 0 {
+		var nonNull []string
+		for _, t := range s.Types {
+			if t != "null" {
+				nonNull = append(nonNull, t)
+			}
+		}
+		if len(nonNull) == 1 {
+			s.Type = nonNull[0]
+			s.Types = nil
+		} else if len(nonNull) == 0 {
+			s.Type = "string"
+			s.Types = nil
+		} else {
+			s.Types = nonNull
+		}
+	}
+	for _, prop := range s.Properties {
+		normalizeSchema(prop)
+	}
+	for _, prop := range s.PatternProperties {
+		normalizeSchema(prop)
+	}
+	for _, item := range s.PrefixItems {
+		normalizeSchema(item)
+	}
+	normalizeSchema(s.Items)
+	for _, item := range s.ItemsArray {
+		normalizeSchema(item)
+	}
+	normalizeSchema(s.AdditionalProperties)
+	normalizeSchema(s.Contains)
+	for _, def := range s.Defs {
+		normalizeSchema(def)
+	}
+	for _, def := range s.Definitions {
+		normalizeSchema(def)
+	}
+	for _, sub := range s.AllOf {
+		normalizeSchema(sub)
+	}
+	for _, sub := range s.AnyOf {
+		normalizeSchema(sub)
+	}
+	for _, sub := range s.OneOf {
+		normalizeSchema(sub)
+	}
 }

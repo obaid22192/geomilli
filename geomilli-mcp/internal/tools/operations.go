@@ -72,7 +72,7 @@ type ListImportableCountriesOutput struct {
 
 func registerOperations(s *mcp.Server, d Deps) {
 	// 1. get_service_status
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "get_service_status",
 		Description: "Retrieve consolidated operational health, harvester ingestion daemon status, and API telemetry metrics for the Geomilli cluster.",
 		Annotations: ReadOnly,
@@ -148,7 +148,7 @@ func registerOperations(s *mcp.Server, d Deps) {
 	})
 
 	// 2. list_import_queue
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "list_import_queue",
 		Description: "List the Harvester ingestion daemon queue, active worker slots, and pending country import tasks.",
 		Annotations: ReadOnly,
@@ -185,7 +185,7 @@ func registerOperations(s *mcp.Server, d Deps) {
 	})
 
 	// 3. list_importable_countries
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "list_importable_countries",
 		Description: "List all countries available for OSM data download and ingestion by the Harvester daemon, including indexing status and sync schedules.",
 		Annotations: ReadOnly,

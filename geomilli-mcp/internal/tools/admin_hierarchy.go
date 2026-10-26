@@ -57,7 +57,7 @@ type ListCitiesOutput struct {
 
 func registerAdminHierarchy(s *mcp.Server, d Deps) {
 	// Tool: list_countries
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "list_countries",
 		Description: "List all countries currently indexed in the Geomilli database along with total place counts. Use this to determine which countries have available geospatial data.",
 		Annotations: ReadOnly,
@@ -98,7 +98,7 @@ func registerAdminHierarchy(s *mcp.Server, d Deps) {
 	})
 
 	// Tool: list_regions
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "list_regions",
 		Description: "List administrative regions, provinces, or states for a specific country by ISO 3166-1 alpha-2 country code (e.g. 'BE', 'FR', 'DE').",
 		Annotations: ReadOnly,
@@ -154,7 +154,7 @@ func registerAdminHierarchy(s *mcp.Server, d Deps) {
 	})
 
 	// Tool: list_cities
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "list_cities",
 		Description: "List major cities and towns for a specific country by ISO 3166-1 alpha-2 country code, ordered by population and popularity score.",
 		Annotations: ReadOnly,

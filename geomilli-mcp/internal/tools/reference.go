@@ -79,7 +79,7 @@ func haversineDistance(lat1, lon1, lat2, lon2 float64) float64 {
 
 func registerReference(s *mcp.Server, d Deps) {
 	// Tool 1: list_place_categories
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "list_place_categories",
 		Description: "List the 19 canonical place categories and their taxonomy definitions, including layer (poi/admin), base ranking score, and known subclasses. Call this tool to discover valid category and class filters for search and discovery.",
 		Annotations: ReadOnly,
@@ -153,7 +153,7 @@ func registerReference(s *mcp.Server, d Deps) {
 	})
 
 	// Tool 2: measure_distance
-	mcp.AddTool(s, &mcp.Tool{
+	RegisterTool(s, &mcp.Tool{
 		Name:        "measure_distance",
 		Description: "Calculate the great-circle distance between two geographic locations using the Haversine formula. Coordinates can be provided directly (lat/lng) or resolved automatically from Geomilli place IDs.",
 		Annotations: ReadOnly,
